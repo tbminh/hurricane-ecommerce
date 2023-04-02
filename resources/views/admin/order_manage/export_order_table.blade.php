@@ -68,66 +68,35 @@
                     <div>Email: hurricane-food@gmail.com</div>
                     <div>SĐT: +84 925 434 581</div>
                 </div>
-                <div class="col-sm-6 ">
-                    <h5 class="mb-3">To:</h5>
-                    @php($show_user = DB::table('users')->where('id',$show_export-> user_id)->first())
-                    <h3 class="text-dark mb-1">{{$show_user->full_name}}</h3>
-                    <div>{{$show_user->address}}</div>
-                    <div>{{ $show_user->email }}</div>
-                    <div>{{ $show_user->phone }}</div>
-                </div>
             </div>
             <div class="table-responsive-sm">
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th class="center">Stt</th>
+                        <th class="center">STT</th>
                         <th>Tên sản phẩm</th>
-                        <th>Giá bán</th>
                         <th class="right">Số lượng</th>
-                        <th class="center">Tổng tiền</th>
+                        <th>Tổng tiền</th>
                     </tr>
                     </thead>
                     <tbody>
                     <?php $total_price = 0; ?>
-                    @php($get_details = DB::table('order_details')->where('order_id', $show_export->id)->get())
+                    @php($get_details = DB::table('ot_details')->where('ot_id', $show_export->id)->get())
                     @foreach($get_details as $key =>$data)
-                        @if ($data->product_id != NULL)
-                            <tr>
-                                <td class="center">{{ ++$key }} </td>
+                        <tr>
+                            <td class="center">{{ ++$key }} </td>
+                            @if($data->product_id != NULL)
                                 @php($get_product = DB::table('products')->where('id', $data->product_id)->first())
                                 <td class="left strong"> {{ $get_product->product_name }}</td>
-                                <td class="left">{{  number_format($get_product->product_price) }} VND</td>
-                                <td class="right">{{ $data->total_quantity }}</td>
-                                <td class="center">
-                                    <?php
-                                    $price = $get_product->product_price;
-                                    $qty = $data ->total_quantity;
-                                    $total = $price * $qty;
-                                    $total_price = $total_price + $total;
-                                    ?>
-                                    <span class="amount">{{ number_format($total)}} VND</span>
-                                </td>
-                            </tr>
-                        @else
-                            <tr>
-                                <td class="center">{{ ++$key }} </td>
+                            @else
                                 @php($get_combo = DB::table('combos')->where('id', $data->combo_id)->first())
-                                <td class="left strong">{{$get_combo->combo_name}}</td>
-                                <td class="center"><img src="{{ url('public/home/upload_img/'.$get_combo->combo_img) }}" class="img-circle elevation-2" alt="User Image " width="30px" height="30px"></td>
-                                <td class="left">{{ number_format($get_combo->combo_total_price)}} VND</td>
-                                <td class="right">{{ $data->total_quantity }}</td>
-                                <td class="right">
-                                    <?php
-                                    $price = $get_combo->combo_total_price;
-                                    $qty = $data ->total_quantity;
-                                    $total = $price * $qty;
-                                    $total_price = $total_price + $total;
-                                    ?>
-                                    <span class="amount">{{ number_format($total_price) }} VND</span>
-                                </td>
-                            </tr>
-                        @endif
+                                <td class="left strong"> {{ $get_combo->combo_name }}</td>
+                            @endif
+                            
+                            <td class="right">{{ $data->ot_quantity }}</td>
+                            <td class="left">{{  number_format($data->ot_price) }} VND</td>
+                            <?php $total_price = $total_price + $data->ot_price; ?>
+                        </tr>
                     @endforeach
                     </tbody>
                 </table>
@@ -142,28 +111,22 @@
                             <td class="left">
                                 <strong class="text-dark">Tổng thu sản phẩm</strong>
                             </td>
-                            <td class="right"> {{ number_format($total_price) }} VND</td>
+                            <td class="right">
+                                <span class="amount">{{ number_format($total_price)}} VND</span>
+                            </td>
                         </tr>
                         <tr>
                             <td class="left">
-                                <strong class="text-dark">Thuế (0%)</strong>
+                                <strong class="text-dark">Phí VAT (0%)</strong>
                             </td>
                             <td class="right">0 VND</td>
-                        </tr>
-                        <tr class="shipping">
-                            <td class="left">
-                                <strong>Phương thức vận chuyển</strong>
-                            </td>
-
-                            <td>
-                                <b>Miễn phí vận chuyển nội ô</b>
-                            </td>
                         </tr>
                         <tr>
                             <td class="left">
                                 <strong class="text-dark">Tổng thanh toán</strong> </td>
                             <td class="right">
-                                <strong class="text-dark">{{number_format($total_price)}} VND</strong>
+                                <?php $total_payment = $total_price + 0 ?>
+                                <strong class="text-dark">{{number_format($total_payment)}} VND</strong>
                             </td>
                         </tr>
                         </tbody>
@@ -184,12 +147,10 @@
 </div>
 
 <script>
-
     function Print_pdf() {
         document.getElementById("btn-print").style.display = "none";
         window.print();
     }
 </script>
-
 </body>
 </html>

@@ -125,7 +125,7 @@
                                              class="img-circle elevation-2" alt="Category Image " width="30px" height="30px">
                                     </td>
                                     <td>
-                                        <a class="btn btn-primary btn-xs" href="{{ url('edit-category/'.$data->id) }}" role="button">
+                                        <a class="btn btn-primary btn-xs" href="#" role="button" data-toggle="modal" data-target="#edit{{ $data->id }}">
                                             <i class="fas fa-edit"></i> Đổi
                                         </a>
                                     </td>
@@ -136,6 +136,43 @@
                                         </a>
                                     </td>
                                 </tr>
+                                <div class="modal fade" id="edit{{ $data->id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Đổi</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="{{ url('edit-category/'.$data->id) }}" method="POST" enctype="multipart/form-data">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <div class="form-group">
+                                                        <label for="">Tên loại sản phẩm</label>
+                                                        <input type="text" name="inputName" class="form-control" value="{{ $data->category_name }}">
+                                                        <div class="invalid-feedback">Chưa nhập tên sản phẩm </div>
+                                                    </div>
+                                                    
+                                                    <div class="form-group">
+                                                        <label for="">Hình ảnh</label>
+                                                        <input type="file" class="form-control-file" id="imgInp" name="inputFileImage">
+                                                        <img id="blah" src="{{ asset('public/home/upload_img/'.$data->category_image) }}" style="max-width:100%;height:50px;border-radius:5px;"/>
+                                                    </div>
+                            
+                                                    <div class="form-group row">
+                                                        <div class="col-12 text-right">
+                                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                                <i class="fas fa-edit"></i> Đổi
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 @empty
                                     <tr>
                                         <td colspan="10">
@@ -160,7 +197,7 @@
         </div>
         <!-- /.container-fluid -->
     </section>
-
+    
     <script>
         CKEDITOR.replace( 'inputDescript' );
     </script>

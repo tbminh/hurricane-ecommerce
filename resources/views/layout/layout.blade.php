@@ -79,93 +79,98 @@
 	</style>
   </head>
 <body>
+	<div id="fb-root"></div>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v12.0&appId=4786925174735123&autoLogAppEvents=1" nonce="2hhNVvRJ"></script>
+	@include('layout.header_home')
 
-        @include('layout.header_home')
-
-<section id="header" class="cd-secondary-nav">
- <div class="container">
-  <div class="row">
-   	<nav class="navbar navbar-default">
-		<!-- Brand and toggle get grouped for better mobile display -->
-		<div class="navbar-header">
-		{{-- <button type="button" style="padding-bottom:5px; margin-bottom: 15px; padding-right:10px" class="navbar-toggle" data-toggle="collapse" data-target="#dropdown-thumbnail-preview">
-			<span class="sr-only">Toggle navigation</span>
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-		</button> --}}
-
-			<ul class="nav navbar-nav" style="float: left; padding-top: 0px;">
+	<section id="header" class="cd-secondary-nav">
+		<div class="container">
+		 <div class="row">
+			  <nav class="navbar navbar-default">
+			   <!-- Brand and toggle get grouped for better mobile display -->
+			   <div class="navbar-header">
+			   {{-- <button type="button" style="padding-bottom:5px; margin-bottom: 15px; padding-right:10px" class="navbar-toggle" data-toggle="collapse" data-target="#dropdown-thumbnail-preview">
+				   <span class="sr-only">Toggle navigation</span>
+				   <span class="icon-bar"></span>
+				   <span class="icon-bar"></span>
+				   <span class="icon-bar"></span>
+			   </button> --}}
+			   </div>
+			   <ul class="nav navbar-nav" style="float: left; padding-top: 0px;">
 				<li style="margin-left: 80px"></li>
 				<li class="active"><a href="{{ url('/') }}" class="hvr-underline-from-center1">TRANG CHỦ</a></li>
 				<li><a href="{{ url('page-category') }}" class="hvr-underline-from-center1">MENU</a></li>
-				<li><a href="{{ url('page-table') }}" class="hvr-underline-from-center1">ĐẶT BÀN</a></li>
-				<li><a href="#" class="hvr-underline-from-center1">TIN TỨC</a></li>
+				<li><a href="{{ url('page-news') }}" class="hvr-underline-from-center1">TIN TỨC</a></li>
 				<li><a href="{{ url('page-contact') }}" class="hvr-underline-from-center1">LIÊN HỆ</a></li>
-				
 			</ul>
-		</div>
-		</nav>
-  	</div>
-  </div>
-</section>
+			   </nav>
+			 </div>
+		 </div>
+	   </section>
 
 @yield('content')
 
 <section id="footer" class="clearfix" >
-  <div class="col-sm-12 space_all"style="display: flex;">
-  <div class="col-sm-3">
-    <div class="footer_1">
-	 <h4>SEMPER</h4>
-	<p>Lorem ipsum dolor sit amet, consectetur
-	adipiscing elit. Integer nec odionec odio Sed cursus ante
-	Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis
-	nostra, per inceptos . Curabitursodales ligula in libero
-	Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum</p>
-	</div>
-	</div>
-	<div class="col-sm-2">
-	  <div class="footer_2">
-	 <h4>DIGNISSIM</h4>
-	<ul>
-	   <li><a href="#">Nostra</a></li>
-	   <li><a href="#">Lacinia Nunc</a></li>
-	   <li><a href="#">Duis Sagittis</a></li>
-	   <li><a href="#">Nulla Quis</a></li>
-	   <li><a href="#">Nec</a></li>
-	   <li><a href="#">Ante</a></li>
-	</ul>
-	</div>
-	</div>
+	<div class="col-sm-12 space_all"style="display: flex;">
 	<div class="col-sm-3">
-	 <div class="footer_3">
-	 <h4>ELEMENTUM </h4>
-	<p>Torquent per conubia nostra, per ligula in libero.Sed.</p>
-	<input type="text" class="form-control" placeholder="Enter your email address"><br>
-	 <a href="#" class="button">Submit</a>
-	</div>
-	</div>
-	<div class="col-sm-4">
-	 <div class="footer_4">
-	 <h4>SED NISI</h4>
-	  <ul>
-	     <li><i class="fa fa-map-marker"></i>Address: Integer Nec Odionec</li>
-         <li><i class="fa fa-phone"></i>Phones: <a href="#">123-2345-6789</a></li>
-         <li><i class="fa fa-user"></i>Fusce Nec Tellus Sed Augue Semper.</li>
-         <li><i class="fa fa-envelope"></i>E-mail:<a href="#"> info@gmail.com</a></li> 
-     </ul>
-	</div>
-	</div>
-  </div>
-</section>
-<section id="footer_main" class="clearfix">
-	 <div class="col-sm-12 space_all">
-	  <div class="footer_main_1">
-	    <p>© 2013 Your Website Name. All Rights Reserved. Design by<a href="http://www.TemplateOnWeb.com"> Template On Web</a> </p>
+	  <div class="footer_1">
+	   <h4>TIÊU CHÍ</h4>
+	  <p>Hương vị độc đáo, phong cách phục vụ thân thiện, 
+		  hết lòng vì khách hàng và bầu không khí nồng nhiệt, 
+		  ấm cúng tại các nhà hàng là ba chìa khóa chính mở cánh cửa thành công của Hurricane
+		  đã tạo nên một nét văn hóa ẩm thực và đóng góp vào sự phát triển của ngành 
+		  công nghiệp thức ăn nhanh.</p>
 	  </div>
-	 </div>
-</section>
-
+	  </div>
+	  <div class="col-sm-2">
+		<div class="footer_2">
+	   <h4>MENU</h4>
+	  <ul>
+		  @php($get_menu = DB::table('categories')->get())
+		  @foreach($get_menu as $data)
+				 <li class="float-left">
+				  <a href="{{ url('page-product/'.Str::slug($data->category_name).'/'.$data->id) }}">{{ $data->category_name }}</a>
+			  </li>
+		  @endforeach
+		  <li>
+			  <a href="{{ url('page-combo') }}">Combo</a>
+		  </li>
+	  </ul>
+	  </div>
+	  </div>
+	  <div class="col-sm-3">
+		  <div class="footer_3">
+			  <h4 class="float-left">KHẨU HIỆU </h4>
+			  <p class="float-left">Hurricane! Thà nhịn nói chứ không nhịn đói!!!</p>
+			  <input type="text" class="form-control" placeholder="Nhập email của bạn để phản hồi"><br>
+			  <a href="{{ url('page-contact') }}" class="button">Phản hồi</a>
+		  </div>
+	  </div>
+	  <div class="col-sm-4">
+	   <div class="footer_4">
+	   <h4>THÔNG TIN LIÊN LẠC</h4>
+		<ul>
+		   <li><i class="fa fa-map-marker"></i>Address: 26C2 P.An Bình, Q.Ninh Kiều, TPCT</li>
+		   <li><i class="fa fa-phone"></i>Phones: <a href="#">07116-196-984</a></li>
+		   <li><i class="fa fa-user"></i>Quản lý cửa hàng: Nguyễn Văn A.</li>
+		   <li><i class="fa fa-envelope"></i>E-mail:<a href="#"> hurricane@gmail.com</a></li> 
+	   </ul>
+	  </div>
+	  </div>
+	</div>
+  </section>
+  
+  @if(session()->has('message1'))
+  <script>
+	  Swal.fire({
+		  position: 'center',
+		  icon: 'success',
+		  title: 'Đăng nhập thành công!',
+		  showConfirmButton: false,
+		  timer: 2000
+	  })
+  </script>
+@endif
 <script>
 	$(document).ready(function(){
 		/*****Fixed Menu******/
@@ -207,5 +212,47 @@
 	}
 </script>
 </body>
+
+<!-- Messenger Chat plugin Code -->
+<div id="fb-root"></div>
+
+<!-- Your Chat plugin code -->
+<div id="fb-customer-chat" class="fb-customerchat">
+</div>
+
+<!-- Messenger Chat plugin Code -->
+<div id="fb-root"></div>
+
+<!-- Your Chat plugin code -->
+<div id="fb-customer-chat" class="fb-customerchat">
+</div>
+
+<!-- Messenger Chat plugin Code -->
+<div id="fb-root"></div>
+
+<!-- Your Chat plugin code -->
+<div id="fb-customer-chat" class="fb-customerchat">
+</div>
+
+<script>
+	var chatbox = document.getElementById('fb-customer-chat');
+	chatbox.setAttribute("page_id", "109964111520508");
+	chatbox.setAttribute("attribution", "biz_inbox");
+
+	window.fbAsyncInit = function() {
+		FB.init({
+		xfbml            : true,
+		version          : 'v12.0'
+		});
+	};
+
+	(function(d, s, id) {
+		var js, fjs = d.getElementsByTagName(s)[0];
+		if (d.getElementById(id)) return;
+		js = d.createElement(s); js.id = id;
+		js.src = 'https://connect.facebook.net/vi_VN/sdk/xfbml.customerchat.js';
+		fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk'));
+</script>
 
 </html>

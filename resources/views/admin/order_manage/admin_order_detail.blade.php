@@ -69,23 +69,43 @@
                         <?php $total_price = 0; ?>
                         @php($get_details = DB::table('order_details')->where('order_id', $show_order->id)->get())
                         @foreach($get_details as $key =>$data)
-                            <tr>
-                                <td class="center">{{ ++$key }} </td>
-                                @php($get_product = DB::table('products')->where('id', $data->product_id)->first())
-                                <td class="left strong">{{$get_product->    product_name}}</td>
-                                <td class="center"><img src="{{ url('public/home/upload_img/'.$get_product->product_img) }}" class="img-circle elevation-2" alt="User Image " width="30px" height="30px"></td>
-                                <td class="left">{{ number_format($get_product->product_price)}} VND</td>
-                                <td class="right">{{ $data->total_quantity }}</td>
-                                <td class="right">
-                                    <?php
-                                    $price = $get_product->product_price;
-                                    $qty = $data ->total_quantity;
-                                    $total = $price * $qty;
-                                    $total_price = $total_price + $total;
-                                    ?>
-                                    <span class="amount">{{ number_format($total_price) }} VND</span>
-                                 </td>
-                            </tr>
+                            @if($data->product_id != NULL)
+                                <tr>
+                                    <td class="center">{{ ++$key }} </td>
+                                    @php($get_product = DB::table('products')->where('id', $data->product_id)->first())
+                                    <td class="left strong">{{$get_product->product_name}}</td>
+                                    <td class="center"><img src="{{ url('public/home/upload_img/'.$get_product->product_img) }}" class="img-circle elevation-2" alt="User Image " width="30px" height="30px"></td>
+                                    <td class="left">{{ number_format($get_product->product_price)}} VND</td>
+                                    <td class="right">{{ $data->total_quantity }}</td>
+                                    <td class="right">
+                                        <?php
+                                        $price = $get_product->product_price;
+                                        $qty = $data ->total_quantity;
+                                        $total = $price * $qty;
+                                        $total_price = $total_price + $total;
+                                        ?>
+                                        <span class="amount">{{ number_format($total_price) }} VND</span>
+                                    </td>
+                                </tr>
+                            @else
+                                <tr>
+                                    <td class="center">{{ ++$key }} </td>
+                                    @php($get_combo = DB::table('combos')->where('id', $data->combo_id)->first())
+                                    <td class="left strong">{{$get_combo->combo_name}}</td>
+                                    <td class="center"><img src="{{ url('public/home/upload_img/'.$get_combo->combo_img) }}" class="img-circle elevation-2" alt="User Image " width="30px" height="30px"></td>
+                                    <td class="left">{{ number_format($get_combo->combo_total_price)}} VND</td>
+                                    <td class="right">{{ $data->total_quantity }}</td>
+                                    <td class="right">
+                                        <?php
+                                        $price = $get_combo->combo_total_price;
+                                        $qty = $data ->total_quantity;
+                                        $total = $price * $qty;
+                                        $total_price = $total_price + $total;
+                                        ?>
+                                        <span class="amount">{{ number_format($total_price) }} VND</span>
+                                    </td>
+                                </tr>
+                            @endif
                         @endforeach
                         </tbody>
                     </table>
@@ -103,14 +123,7 @@
                                 </td>
 
                                 <td>
-                                    @if ($total_price >= 1000000)
-                                        <?php  $delivery =0; ?>
-                                        <b>Miễn phí vận chuyển</b>
-                                        <input type="hidden" value="0" name="inputDelivery">
-                                    @else
-                                        <b><?php $delivery = 100000; echo number_format($delivery); ?> VND</b>
-                                        <input type="hidden" value="{{ $delivery }}" name="inputDelivery">
-                                    @endif
+                                    <b>Miễn phí vận chuyển nội ô Cần Thơ</b>
                                 </td>
                             </tr>
 
@@ -120,8 +133,7 @@
                                 </td>
 
                                 <td class="right">
-                                    <?php $total_payment = $total_price + $delivery ?>
-                                    <strong>{{ number_format($total_payment) }} VND</strong>
+                                    <strong>{{ number_format($total_price) }} VND</strong>
                                 </td>
                             </tr>
                             </tbody>
@@ -132,9 +144,7 @@
                             </a>
                         </div>
                     </div>
-
                 </div>
-
             </div>
         </div>
     </div>

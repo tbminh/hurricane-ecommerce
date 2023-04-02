@@ -109,7 +109,6 @@
             }
         }
     </style>
-
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -182,7 +181,7 @@
                 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                     <div class="image">
                         {{-- <img src="#"  class="img-circle elevation-2" alt="User Image"> --}}
-                        <img src="public/home/upload_img/user.png"  class="img-circle elevation-2" alt="User Image">
+                        <img src="{{ asset('public/home/upload_img/user.png') }}"  class="img-circle elevation-2" alt="User Image">
                     </div>
                     <div class="info">
                         <a href="{{ url('profile-admin/'.Auth::id()) }}" class="d-block"><b>{{ Auth::user()->user_name }}</b></a>
@@ -262,45 +261,29 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{url('page-combo-product')}}" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Danh sách combo</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
                                 <a href="{{url('product-supplier')}}" class="nav-link">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Nhà cung cấp</p>
                                 </a>
                             </li>
                         </ul>
-
                     </li>
 
-                    <li class="nav-item has-treeview">
-                        <a href="#" class="nav-link ">
+                    <li>
+                        <a href="{{url('admin-order')}}" class="nav-link ">
                             <i class="fa fa-list-ol" aria-hidden="true"></i>
                             <p>
                                 Quản lí hóa đơn
                                 <i class="right fas fa-angle-left"></i>
                             </p>
                         </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a href="{{url('admin-order')}}" class="nav-link ">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Hóa đơn sản phẩm</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{url('admin-order')}}" class="nav-link ">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Hóa đơn đặt bàn</p>
-                                </a>
-                            </li>
-                        </ul>
                     </li>
-
+                    {{-- <li class="nav-item">
+                        <a href="{{url('table-area')}}" class="nav-link">
+                            <i class="fa fa-plus-square-o" aria-hidden="true"></i>
+                            <p>Bàn Ăn - Khu Vực</p>
+                        </a>
+                    </li>
 
                     <li class="nav-item">
                         <a href="{{url('table-manage/0')}}" target="_blank" class="nav-link">
@@ -308,6 +291,13 @@
                             <p>Quản lý đặt bàn</p>
                         </a>
                     </li>
+
+                    <li class="nav-item">
+                        <a href="{{url('kitchen-manage/0')}}" target="_blank" class="nav-link">
+                            <i class="fa fa-bell" aria-hidden="true"></i>
+                            <p>Quản lý bếp</p>
+                        </a>
+                    </li> --}}
                     <li class="nav-item has-treeview">
                         <a href="{{ url('logout-admin') }}" class="nav-link  text-warning" onclick="return confirm('Bạn có muốn đăng xuất không ?')">
                             <i class="fa fa-sign-out" ></i>

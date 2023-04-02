@@ -18,6 +18,7 @@
     </div>
 @endsection
 
+@include('admin.user_manage.add_user')
 
 @section('content')
     <section class="content">
@@ -26,18 +27,6 @@
             <!-- Left col -->
             <section class="col-lg-12 connectedSortable">
 {{--                Hiển thị dòng thông báo đã thêm thành công--}}
-                @if(session()->has('message1'))
-                <script>
-                    Swal.fire({
-                        position: 'center',
-                        icon: 'success',
-                        title: 'Đã thêm thành công nhân viên mới!',
-                        showConfirmButton: false,
-                        timer: 2000
-                    })
-                </script>
-                @endif
-
                 @if(session()->has('message'))
                     <div class="alert alert-success">
                         {{ session()->get('message') }}
@@ -51,12 +40,11 @@
                             <i class="ion ion-clipboard mr-1"></i>
                             Nhân viên
                         </h3>
-
-                            <div class="card-tools">
-                                <a class="btn btn-primary btn-sm" href="{{ url('page-add-admin') }}" role="button" >
-                                    <i class="fa fa-plus-circle"></i> Thêm mới
-                                </a>
-                            </div>
+                        <div class="card-tools">
+                            <button class="btn btn-primary btn-sm"type="button" data-toggle="modal" data-target="#exampleModal" >
+                                <i class="fa fa-plus-circle"></i> Thêm mới
+                            </button>
+                        </div>
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body p-1">
@@ -93,7 +81,8 @@
                                         <b>Nam</b> 
                                     @elseif($data->gender==1)
                                         <b>Nữ</b>
-                                    @else   <b>Khác</b>        
+                                    @else   
+                                        <b>Khác</b>        
                                     @endif
                                 </td>
                                 <td>
@@ -103,7 +92,7 @@
                                     </a>
                                 </td>
                                 <td>
-                                    <a class="btn btn-success btn-xs" href="{{ url('page-change-role/'.$data->id) }}" role="button">
+                                    <a class="btn btn-success btn-xs" href="{{ url('page-role-access') }}">
                                         <i class="fas fa-exchange-alt"></i> Đổi
                                     </a>
                                 </td>

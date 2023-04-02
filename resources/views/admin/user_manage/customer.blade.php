@@ -18,6 +18,7 @@
     </div>
 @endsection
 
+@include('admin.user_manage.add_user')
 
 @section('content')
     <section class="content">
@@ -25,19 +26,6 @@
         <div class="row">
             <!-- Left col -->
             <section class="col-lg-12 connectedSortable">
-
-{{--                Hiển thị dòng thông báo đã thêm thành công--}}
-                @if(session()->has('message1'))
-                <script>
-                    Swal.fire({
-                        position: 'center',
-                        icon: 'success',
-                        title: 'Đã thêm thành công khách hàng mới!',
-                        showConfirmButton: false,
-                        timer: 2000
-                    })
-                </script>
-                @endif
 
                 @if(session()->has('message'))
                     <div class="alert alert-success">
@@ -53,9 +41,9 @@
                         </h3>
 
                             <div class="card-tools">
-                                <a class="btn btn-primary btn-sm" href="{{ url('page-add-admin') }}" role="button" >
+                                <button class="btn btn-primary btn-sm"type="button" data-toggle="modal" data-target="#exampleModal" >
                                     <i class="fa fa-plus-circle"></i> Thêm mới
-                                </a>
+                                </button>
                             </div>
                     </div>
                     <!-- /.card-header -->
@@ -71,7 +59,7 @@
                                 <th>Số điện thoại</th>
                                 <th>Email</th>
                                 <th>Địa chỉ</th>
-                                <th>Tùy chọn</th>
+                                <th colspan="2">Tùy chọn</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -81,8 +69,13 @@
                                         <td>{{ $data->full_name }}</td>
                                         <td>{{ $data->user_name }}</td>
                                         <td>
-                                            <img src="{{ url('public/home/upload_img/'.$data->avatar) }}"
+                                            @if ($data->avatar != NULL)
+                                                <img src="{{ url('public/home/upload_img/'.$data->avatar) }}"
                                                 class="img-circle elevation-2" alt="User Image " width="30px" height="30px">
+                                            @else
+                                                <img src="{{ url('public/home/upload_img/user.png') }}"
+                                                class="img-circle elevation-2" alt="User Image " width="30px" height="30px">
+                                            @endif
                                         </td>
                                         <td>
                                             @if($data->gender ==0)
@@ -95,10 +88,21 @@
                                         </td>
                                         <td>0{{ $data->phone }}</td>
                                         <td>{{ $data->email }}</td>
-                                        <td>{{ $data->address }}</td>
+                                        <td>
+                                            @if ($data->address == null)
+                                                <span>Chưa cập nhật</span>
+                                            @else
+                                                {{ $data->address }}
+                                            @endif
+                                        </td>
                                         <td>
                                             <a class="btn btn-danger btn-xs" href="{{ url('delete-customer/'.$data->id) }}" role="button" onclick="return confirm('Bạn có chắc chắn không?');">
                                                 <i class="fa fa-trash"></i> Xóa
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-success btn-xs" href="{{ url('page-role-access') }}">
+                                                <i class="fas fa-exchange-alt"></i> Đổi
                                             </a>
                                         </td>
                                     </tr>

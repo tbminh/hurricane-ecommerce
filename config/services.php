@@ -30,4 +30,15 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'facebook' => [
+        'client_id' => '4786925174735123',
+        'client_secret' => '7c439c6fee77edf91e8f1e6f29ffb56c',
+        'redirect' => 'http://localhost/hurricane.com.vn/fb/callback',
+    ],
+
+    'google' => [
+        'client_id' => '683253586577-ki41lgcdkc580ui7chskjv1l312okdrr.apps.googleusercontent.com',
+        'client_secret' => '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',
+        'redirect' => 'http://localhost/hurricane.com.vn/gg/callback',
+    ],
 ];

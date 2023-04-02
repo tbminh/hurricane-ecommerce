@@ -67,7 +67,6 @@
                     <!-- /.card -->
                 </section>
 
-
                 <section class="col-lg-6 connectedSortable">
                     @if(session()->has('message'))
                         <div class="alert alert-success">
@@ -94,33 +93,74 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @forelse($show_user_roles as $key => $show_user_role)
+                                @foreach($show_user_roles as $key => $show_user_role)
                                 <tr>
                                     <td>{{ ++$key }}</td>
                                     <td>{{ $show_user_role->full_name }}</td>
                                     <td>
-                                        @php($get_roles = DB::table('role_accesses')->where('id',$show_user_role->role_id)->get())
-                                        @foreach($get_roles as $get_role)
+                                        @php($get_role = DB::table('role_accesses')->where('id',$show_user_role->role_id)->first())
                                             {{ $get_role->role_name }}
-                                        @endforeach
                                     </td>
                                     <td>
                                         @if($show_user_role->role_id == 1)
                                             <button class="btn btn-primary btn-sm" type="button" disabled>Thay đổi</>
                                         @else
-                                            <a class="btn btn-primary btn-sm" href="{{ url('page-change-role/'.$show_user_role->id) }}" role="button">Thay đổi</a>
+                                            <button class="btn btn-primary btn-sm"  type="button" data-toggle="modal" data-target="#model{{ $show_user_role->id }}">Thay đổi</button>
                                         @endif
                                     </td>
                                 </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4">
-                                            <b class="text-danger">Không có dữ liệu</b>
-                                        </td>
-                                    </tr>
-                                @endforelse
+                                <div class="modal fade" id="model{{ $show_user_role->id }}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <form action="{{ url('update-role/'.$show_user_role->id) }}" method="POST">
+                                            @csrf
+                                            @method('PUT')
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">THAY ĐỔI QUYỀN </h5>
+                                                </div>
+                            
+                                                <div class="modal-body">
+                                                    <div class="form-group">
+                                                        <label for="">Họ tên</label>
+                                                        <input type="text" name="inputName" class="form-control"
+                                                        value="{{ $show_user_role->full_name }}" disabled>
+                                                    </div>
+                            
+                                                    <div class="form-group">
+                                                        <label>Quyền</label>
+                                                        <select name="inputRoleId" class="form-control">
+                                                            @php($get_roles = DB::table('role_accesses')->where('id',$show_user_role->role_id)->get())
+                                                            <option value="{{ $get_role->id }}">{{ $get_role->role_name }}</option>
+
+                                                            <option value="">- - Chọn quyền - -</option>
+                                                            @php($get_role_2 = DB::table('role_accesses')->get())
+                                                            @foreach($get_role_2 as $data)
+                                                                @if ($data->id == $get_role->id) 
+                                                                    @continue
+                                                                @else
+                                                                    <option value="{{ $data->id }}">{{ $data->role_name }}</option>
+                                                                @endif
+                                                                
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                            
+                                                    <div class="form-group ">
+                                                        <div class="col-12 text-right">
+                                                            <button type="submit" class="btn btn-primary btn-sm">Thêm</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                @endforeach
                                 </tbody>
                             </table>
+                            <ul class="pagination justify-content-xl-end" style="margin:20px 0">
+                                {{ $show_user_roles->links() }}
+                            </ul>
                         </div>
                         <!-- /.card-body -->
                     </div>

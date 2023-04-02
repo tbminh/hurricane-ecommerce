@@ -5,18 +5,31 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckLogin;
 
 //Trang chủ
-Route::get('/', 'HomeController@index');
+Route::get('/', 'HomeController@index')->name('home');
 
 //Trang category
 Route::get('page-category','HomeController@page_category');
 
 //Trang sản phẩm
-Route::get('page-product/{category_name}/{id_category}','HomeController@page_product');
+Route::get('page-product/{id_category}','HomeController@page_product');
+
+//Trang combo
+Route::get('page-combo','HomeController@page_combo');
+
+//Trang chi tiết sản phẩm
+Route::get('page-product-detail/{id}','HomeController@page_product_detail');
+
+//Trang tin tức
+Route::get('page-news',function(){
+    return view('home.page_news');
+});
 
 //Trang contact
 Route::get('page-contact',function(){
     return view('home.page_contact');
 });
+
+
 //=========XỬ LÍ ĐĂNG KÝ ĐĂNG NHẬP ====================//
 //Trang đăng ký
 Route::get('page-sign-up','HomeController@page_sign_up');
@@ -28,11 +41,21 @@ Route::post('post-sign-up','HomeController@post_sign_up');
 Route::post('post-login','HomeController@post_login');
 //Hàm xử lí đăng xuất
 Route::get('logout','HomeController@logout');
+//Đăng ký facebook
+Route::get('facebook','HomeController@facebookRedirect');
+Route::get('fb/callback','HomeController@loginWithFacebook');
+//Đăng nhập bằng google
+Route::get('google','HomeController@googleRedirect');
+Route::get('gg/callback','HomeController@loginWithGoogle');
 //============GIỎ HÀNG ==============//
 //Trang giỏ hàng
 Route::get('page-cart/{id_user}','HomeController@page_cart');
 //Hàm thêm vào giỏ hàng
 Route::get('add-cart/{id_user}/{id_product}','HomeController@add_cart');
+//Thêm combo vào giỏ hàng
+Route::get('add-combo-cart/{id_user}/{id_combo}','HomeController@add_combo_cart');
+//Thêm chi tiết sp vào giỏ hàng
+Route::post('add-cart-detail/{id}/{id_user}','HomeController@add_cart_detail');
 //Hàm cập nhật số lượng trong giỏ hàng
 Route::post('update-cart/{id_user}/{id_cart}','HomeController@update_cart');
 //Hàm xóa sản phẩm trong giỏ hàng
@@ -48,23 +71,7 @@ Route::post('checkout-online/{id_user}','HomeController@create');
 //Hàm trả về thông tin
 Route::get('return-page-vnpay-checkout','HomeController@return')->name('return_checkout_vnpay');
 
-//=========ORDER TABLE ==========//
-// //Trang đặt bàn
-// Route::get('page-table','HomeController@page_table');
-// //Trang table_cart
-// Route::get('page-table-cart/{id_table}','HomeController@page_table_cart');
-// //Trang table_category
-// Route::get('page-table-category/{id_table}','HomeController@page_table_category');
-// //Trang table-product
-// Route::get('page-table-product/{id_category}/{id_table}','HomeController@page_table_product');
-// //Hàm thêm sản phẩm vào table-cart
-// Route::get('add-table-cart/{id_product}/{id_table}','HomeController@add_table_cart');
-// //Hàm xóa sản phẩm trong table
-// Route::get('delete-product-tc/{id_tc}','HomeController@delete_product_tc');
-// //Hàm xóa table cart
-// Route::get('cancel-table-cart/{id_table}','HomeController@cancel_table_cart');
-// //Hàm thanh toán hóa đơn
-// Route::post('post-table-cart/{id_table}','HomeController@post_table_cart');
+Route::post('sending-email','HomeController@post_feedback')->name('post.feedback');
 
 //======THÔNG TIN KHÁCH HÀNG ======//
 //Trang hồ sơ cá nhân khách hàng
@@ -84,7 +91,9 @@ Route::get('page-complete/{id_user}', 'HomeController@page_complete');
 //Trang đã hủy
 Route::get('page-cancelled/{id_user}', 'HomeController@page_cancelled');
 
-
+Route::get('test',function(){
+    return view('home.test');
+});
 
 //=============================
 //============================
@@ -122,7 +131,7 @@ Route::middleware([CheckLogin::class])->group(function () {
     //Trang thay đổi quyền truy cập
     Route::get('page-change-role/{id_role}', 'AdminController@page_change_role');
     //Hàm đổi quyền truy cập CSDL
-    Route::put('update-role/{id_role}', 'AdminController@update_role');
+    Route::put('update-role/{id_user}', 'AdminController@update_role');
     //Quản trị viên
     Route::get('page-administation', 'AdminController@page_administation');
     //Trang thêm quản trị viên
@@ -141,22 +150,23 @@ Route::middleware([CheckLogin::class])->group(function () {
     //=======QUẢN LÝ SẢN PHẨM ======//
     //Trang loại sản phẩm
     Route::get('page-category-product', 'AdminController@page_category_product');
-    //Phương thức thêm loại sản phẩm CSDL
     Route::post('post-add-category', 'AdminController@post_add_category');
-    //Xóa loại sản phẩm
     Route::get('delete-category/{id_category}', 'AdminController@delete_category');
-    //DS sản phẩm
+    Route::put('edit-category/{id_category}', 'AdminController@edit_category');
     Route::get('page-list-product', 'AdminController@page_list_product');
-    //DS combo theo sản phẩm
     Route::get('page-combo-product','AdminController@combo_product');
     //Trang thêm combo
     Route::post('add-combo', 'AdminController@add_combo');
+    //Xóa combo
+    Route::get('delete-combo/{id_combo}','AdminController@delete_combo');
     //Trang chi tiết combo
     Route::get('combo-detail/{id_combo}','AdminController@combo_detail');
     //Xóa combo detail
-    Route::get('delete-product-combo/{id_detail}','AdminController@delete_product_combo');
+    Route::get('delete-product-combo/{id_detail}/{id_combo}','AdminController@delete_product_combo');
     //Thêm product vào combo 
     Route::post('post-add-cd/{id_combo}','AdminController@add_combo_detail');
+    //Cập nhật lại tổng giá theo discount
+    Route::get('update-discount/{key}/{dis}','AdminController@update_discount');
     //Lấy sản phẩm theo category bằng ajax
     Route::get('findProductName','AdminController@findProductName');
 
@@ -165,9 +175,6 @@ Route::middleware([CheckLogin::class])->group(function () {
 
     //Thêm chi tiết sản phẩm
     Route::get('add-pdetail','AdminController@add_pdetail');
-
-    //Hàm chỉnh sửa sản phẩm
-    Route::get('edit-product/{id_product}', 'AdminController@edit_product');
     //Xóa sản phẩm
     Route::get('delete-product/{id_product}','AdminController@delete_product');
     //Cập nhật thông tin sản phẩm
@@ -186,6 +193,10 @@ Route::middleware([CheckLogin::class])->group(function () {
     //========QUẢN LÝ HÓA ĐƠN=====//
     //Trang hóa đơn 
     Route::get('admin-order', 'AdminController@admin_order');
+    //Trang hóa đơn đặt bàn
+    Route::get('admin-table-order','AdminController@admin_table_order');
+    //Hàm xuất hóa đơn đặt bàn
+    Route::get('export-order-table/{id_ot}','AdminController@export_order_table');
     //Duyệt hóa đơn
     Route::get('approve-order/{id}', 'AdminController@approve_order');
     //Xác nhận đã giao hàng
@@ -196,18 +207,32 @@ Route::middleware([CheckLogin::class])->group(function () {
     Route::get('admin-order-detail/{id}', 'AdminController@admin_order_detail');
     //Xuất hóa đơn
     Route::get('export-order/{id}', 'AdminController@export_order');
+    //Trang bàn ăn - khu vực
+    Route::get('table-area','AdminController@table_area');
+    //Thêm bàn mới
+    Route::post('add-table','AdminController@add_table');
+    //Hàm sửa bàn
+    Route::put('edit-table/{id_table}','AdminController@edit_table');
+    //Hàm xóa bàn
+    Route::get('delete-table/{id_table}','AdminController@delete_table');
 
     //==========QUẢN LÝ ĐẶT BÀN- CHỌN MÓN =================//
-
     //Trang chọn bàn
     Route::get('table-manage/{id_area}','TableController@table_manage');
-
+    //Trang quản lý bếp
+    Route::get('kitchen-manage/{id_table}','TableController@kitchen_manage');
     //Trang chọn món
     Route::get('table-menu/{id_table}/{id_cate}','TableController@table_menu');
-
+    //Hàm cập nhật số lượng sp trong bếp
+    Route::get('update-kitchen-quantity/{key}/{qty}','TableController@update_kitchen_quantity');
     //Thêm product và table và table-cart
     Route::get('add-table-cart/{id_user}/{id_table}/{id_product}','TableController@add_table_cart');
-
+    //Lấy sản phẩm theo table bằng ajax
+    Route::get('findTableName','TableController@findTableName');
+    //Đổi bàn 
+    Route::get('change-table/{id_table}','TableController@change_table');
+    //Ghép bàn
+    Route::put('pairing-table','TableController@pairing_table');
     //Thêm combo và table vào table-cart
     Route::get('add-combo-tbcart/{id_user}/{id_table}/{id_combo}','TableController@add_combo_tbcart');
 
@@ -217,7 +242,15 @@ Route::middleware([CheckLogin::class])->group(function () {
     //Xóa table cart
     Route::get('delete-table-cart/{id_table}','TableController@delete_table_cart');
 
+    //Xóa product trong table-cart
+    Route::get('delete-product-tc/{key}','TableController@delete_product_tc');
+
+    //Tìm kiếm sản phẩm trong table menu
+    Route::get('search-pro-table/{key}','TableController@search_pro_table');
+
     //Hàm thanh toán table
     Route::post('checkout-table/{id_table}','TableController@checkout_table');
-    });
+
+});
+
 

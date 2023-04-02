@@ -20,6 +20,7 @@
     </div>
 @endsection
 
+@include('admin.user_manage.add_user')
 
 @section('content')
     <section class="content">
@@ -27,25 +28,11 @@
             <div class="row">
                 <section class="col-lg-12 connectedSortable">
 
-{{--                Hiển thị dòng thông báo đã thêm thành công--}}
-                @if(session()->has('message1'))
-                <script>
-                    Swal.fire({
-                        position: 'center',
-                        icon: 'success',
-                        title: 'Đã thêm thành công quản trị viên!',
-                        showConfirmButton: false,
-                        timer: 2000
-                    })
-                </script>
-                @endif
-
                 @if(session()->has('message'))
                     <div class="alert alert-success">
                         {{ session()->get('message') }}
                     </div>
                 @endif
-
 
                 <!-- TO DO List -->
                 <div class="card">
@@ -55,9 +42,9 @@
                             QUẢN TRỊ
                         </h3>
                         <div class="card-tools">
-                            <a class="btn btn-primary btn-sm" href="{{ url('page-add-admin') }}" role="button" >
+                            <button class="btn btn-primary btn-sm" type="button" data-toggle="modal" data-target="#exampleModal" >
                                <i class="fa fa-plus-circle"></i> Thêm mới
-                            </a>
+                            </button>
                         </div>
                     </div>
                     <!-- /.card-header -->
@@ -88,7 +75,6 @@
                                 <td>{{$data->email}}</td>
                                 <td>{{$data->address}}</td>
                                 <td>0{{$data->phone}}</td>
-                                
                             </tr>
                             @empty
                                 <tr>
@@ -108,7 +94,7 @@
             </div>
         </div>
     </section
-
+    
 
 @endsection
 

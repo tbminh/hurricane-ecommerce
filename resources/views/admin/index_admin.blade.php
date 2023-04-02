@@ -133,7 +133,7 @@
                                             </td>
 
                                             <td>
-                                                @if ($data->order_payment == 1)
+                                                @if ($data->order_payment == 0)
                                                     <b style="color: #d35400;">
                                                         <i class="fa fa-money" aria-hidden="true"></i>&nbsp; Thanh Toán Tiền Mặt 
                                                     </b> 

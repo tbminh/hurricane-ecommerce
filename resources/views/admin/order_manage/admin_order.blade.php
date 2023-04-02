@@ -71,8 +71,8 @@
                                         </td>
 
                                         <td>
-                                            @if ($data->order_payment == 1)
-                                            <b style="color: #d35400;"> Thanh Toán Tiền Mặt &nbsp;<i class="fa fa-money" aria-hidden="true"></i></b> 
+                                            @if ($data->order_payment == 0)
+                                                <b style="color: #d35400;"> Thanh Toán Tiền Mặt &nbsp;<i class="fa fa-money" aria-hidden="true"></i></b> 
                                             @else
                                                 <b style="color: #22a6b3;">Thanh Toán Online &nbsp;<i class="fa fa-credit-card" aria-hidden="true"></i> </b>  
                                             @endif

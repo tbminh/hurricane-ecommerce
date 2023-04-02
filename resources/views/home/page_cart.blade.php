@@ -1,7 +1,7 @@
 @extends('layout.layout')
 @section('title','Trang giỏ hàng')
 @section('content')
-<link href="{{ asset('public/home/css/bootstrap.min.css') }}" rel="stylesheet">
+{{-- <link href="{{ asset('public/home/css/bootstrap.min.css') }}" rel="stylesheet"> --}}
 
 
 <style>
@@ -66,40 +66,77 @@
             </thead>
             <tbody>
                 @foreach ($show_carts as $show_cart)
-                    @php($get_products = DB::table('products')->where('id',$show_cart->product_id)->first())
-                    <form action="{{ url('update-cart/'.Auth::id().'/'.$show_cart->id) }}" method="POST">
-                        @csrf
-                        <tr>
-                            <td data-label="Tên sản phẩm">
-                                <a href="#">{{ $get_products->product_name }}</a>
-                            </td>
-                            <td data-label="Hình Ảnh">
-                                <a href="#">
-                                    <img class="image-product" src="{{asset('public/home/upload_img/'.$get_products->product_img)}}" width="145" height="145" >
-                                </a>
-                            </td>
-                            <td data-label="Giá">
-                                {{  number_format($get_products->product_price) }} VND/{{ $get_products->unit_price }} 
-                            </td>
+                    @if($show_cart->product_id != NULL)
+                        @php($get_products = DB::table('products')->where('id',$show_cart->product_id)->first())
+                        <form action="{{ url('update-cart/'.Auth::id().'/'.$show_cart->id) }}" method="POST">
+                            @csrf
+                            <tr>
+                                <td data-label="Tên sản phẩm">
+                                    <a href="#">{{ $get_products->product_name }}</a>
+                                </td>
+                                <td data-label="Hình Ảnh">
+                                    <a href="#">
+                                        <img class="image-product" src="{{asset('public/home/upload_img/'.$get_products->product_img)}}" width="145" height="145" >
+                                    </a>
+                                </td>
+                                <td data-label="Giá">
+                                    {{  number_format($get_products->product_price) }} VND/{{ $get_products->unit_price }} 
+                                </td>
 
-                            <td data-label="Số lượng"> 
-                                <input type="number" size="3" class="input-text qty text" name="quantity" value="{{ $show_cart->quantity }}" min="0" step="1">
-                            </td>
-    
-                            <td data-label="Tổng tiền">
-                                {{ number_format($get_products->product_price * $show_cart->quantity) }} VND
-                            </td>
-                            <td data-label="Tùy chọn">
-                                <input type="submit" class="btn btn-success"  value="Cập Nhật"  name="update_cart">
-                            </td>
-                            <td data-label="Tùy chọn"> 
-                                <a href="{{ url('delete-product-cart/'.$show_cart->id) }}" class="btn btn-danger"
-                                    onclick="return confirm('Bạn có chắc muốn xóa không?');">
-                                    <i class="fa fa-recycle" aria-hidden="true"> Xóa</i>
-                                </a>
-                            </td>
-                        </tr>  
-                    </form>
+                                <td data-label="Số lượng"> 
+                                    <input type="number" size="3" class="input-text qty text" name="quantity" value="{{ $show_cart->quantity }}" min="0" step="1">
+                                </td>
+        
+                                <td data-label="Tổng tiền">
+                                    {{ number_format($get_products->product_price * $show_cart->quantity) }} VND
+                                </td>
+                                <td data-label="Tùy chọn">
+                                    <input type="submit" class="btn btn-success"  value="Cập Nhật"  name="update_cart">
+                                </td>
+                                <td data-label="Tùy chọn"> 
+                                    <a href="{{ url('delete-product-cart/'.$show_cart->id) }}" class="btn btn-danger"
+                                        onclick="return confirm('Bạn có chắc muốn xóa không?');">
+                                        <i class="fa fa-recycle" aria-hidden="true"> Xóa</i>
+                                    </a>
+                                </td>
+                            </tr>  
+                        </form>
+                    @else
+                        @php($get_combo = DB::table('combos')->where('id',$show_cart->combo_id)->first())
+                        <form action="{{ url('update-cart/'.Auth::id().'/'.$show_cart->id) }}" method="POST">
+                            @csrf
+                            <tr>
+                                <td data-label="Tên combo">
+                                    <a href="#">{{ $get_combo->combo_name }}</a>
+                                </td>
+                                <td data-label="Hình Ảnh">
+                                    <a href="#">
+                                        <img class="image-product" src="{{asset('public/home/upload_img/'.$get_combo->combo_img)}}" width="145" height="145" >
+                                    </a>
+                                </td>
+                                <td data-label="Giá">
+                                    {{  number_format($get_combo->combo_total_price) }} VND/Combo 
+                                </td>
+
+                                <td data-label="Số lượng"> 
+                                    <input type="number" size="3" class="input-text qty text" name="quantity" value="{{ $show_cart->quantity }}" min="0" step="1">
+                                </td>
+        
+                                <td data-label="Tổng tiền">
+                                    {{ number_format($get_combo->combo_total_price * $show_cart->quantity) }} VND
+                                </td>
+                                <td data-label="Tùy chọn">
+                                    <input type="submit" class="btn btn-success"  value="Cập Nhật"  name="update_cart">
+                                </td>
+                                <td data-label="Tùy chọn"> 
+                                    <a href="{{ url('delete-product-cart/'.$show_cart->id) }}" class="btn btn-danger"
+                                        onclick="return confirm('Bạn có chắc muốn xóa không?');">
+                                        <i class="fa fa-recycle" aria-hidden="true"> Xóa</i>
+                                    </a>
+                                </td>
+                            </tr>  
+                        </form>
+                    @endif
                 @endforeach
                         <tr>
                             <td colspan="6"></td>

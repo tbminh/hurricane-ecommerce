@@ -9,12 +9,15 @@ use App\ComboProduct;
 use App\Comment;
 use App\Order;
 use App\OrderDetail;
+use App\OrderTable;
+use App\OtDetail;
 use App\Product;
 use App\ProductSupplier;
 use App\RoleAccess;
 use App\TableArea;
 use App\Slider;
 use App\Supplier;
+use App\Table;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -131,7 +134,7 @@ class AdminController extends Controller
     //Hàm hiển thị trang quyền truy cập
     public function page_role_access()
     {
-        $show_user_roles = User::latest()->paginate(5);
+        $show_user_roles = User::paginate(5);
         return view('admin.user_manage.role_access',['show_user_roles'=>$show_user_roles]);
     }
 
@@ -160,15 +163,14 @@ class AdminController extends Controller
     }
 
     //Hàm hiển thị trang thay đổi quyền
-    public function update_role(Request $request, $id_role)
+    public function update_role(Request $request, $id_user)
     {
-        $update_role = User::find($id_role);
+        $update_role = User::find($id_user);
         $update_role->role_id = $request->input('inputRoleId');
         $update_role->save();
 
         return redirect('page-role-access')->with('message','Đã thay đổi quyền');
     }
-
 
     //HÀM HIỂN THỊ TRANG QUẢN TRỊ
     public function page_administation()
@@ -177,11 +179,6 @@ class AdminController extends Controller
         return view('admin.user_manage.administation',['show_admins'=>$show_admins]);
     }
 
-    //Trang thêm quản trị
-    public function page_add_admin()
-    {
-        return view('admin.user_manage.add_admin');
-    }
 
     //HÀM THÊM MỚI ADMIN-NHÂN VIÊN CSDL
     public function post_admin(Request $request)
@@ -212,17 +209,7 @@ class AdminController extends Controller
             $add_admin->avatar = $image_name;
         }
         $add_admin->save();
-
-        //Thực hiện thứ 2
-        $latest_user = DB::table('users')->latest()->first();
-        if ($latest_user->role_id == 1) {
-            return redirect('page-administation')->with('message1','');
-        }elseif ($latest_user->role_id == 2){
-            return redirect('page-customer')->with('message1','');
-        }
-        else{
-            return redirect('page-employee')->with('message1','');
-        }
+        return redirect()->back()->with('message','Thêm thành công');
     }
 
     //HÀM HIỂN THỊ TRANG NHÂN VIÊN LẤY TỪ CSDL
@@ -252,10 +239,8 @@ class AdminController extends Controller
         User::destroy($id_customer);
         return redirect()->back()->with('message','Đã xóa khách hàng');
     }
-    
 
     //=========================== TRANG QUẢN LÝ SẢN PHẨM ===============================//
-    //==================================================================================//
     //==================================================================================//
     
     //TRANG LOẠI SẢN PHẨM
@@ -288,7 +273,18 @@ class AdminController extends Controller
         return redirect()->back()->with('message1','Đã thêm loại sản phẩm');
     }
 
-    //HÀM XÓA LOẠI SẢN PHẨM
+    public function edit_category(Request $request, $id_category){
+        $update_cate = Category::find($id_category);
+        if($request->hasFile('inputFileImage')){
+            $image = $request->file('inputFileImage');
+            $image_name = $image->getClientOriginalName();
+            $image->move(public_path('home/upload_img'), $image_name);
+            $update_cate->category_image = $image_name;
+        }
+        $update_cate->save();
+        return redirect()->back()->with('message','Đã sửa thành công');
+    }
+
     public function delete_category($id_category)
     {
         Category::where('id','=',$id_category)->delete();
@@ -303,13 +299,20 @@ class AdminController extends Controller
 
     //Hàm thêm sản phẩm
     public function post_product(Request $request){
+        $get_discount = $request->input('inputDiscount');
+        $get_price = $request->input('inputPrice');
         $add_product = new Product();
         $add_product->category_id = $request->input('inputCategoryId');
         $add_product->product_name = $request->input('inputName');
         $add_product->product_quantity = $request->input('inputQuantity');
         $add_product->product_price = $request->input('inputPrice');
-        $add_product->product_discount = 0;
-        $add_product->unit_price = $request->input('inputUnitPrice');
+        $add_product->product_discount = $get_discount;
+        $add_product->unit_price = $get_price;
+        if($get_discount > 0){
+            $add_product->pro_discount_price = $get_price-($get_discount * $get_price)/100;
+        } else{
+            $add_product->pro_discount_price = 0;
+        }
 
         if($request->hasFile('inputFileImage')){
             $image = $request->file('inputFileImage');
@@ -318,25 +321,16 @@ class AdminController extends Controller
             $add_product->product_img = $image_name;
         }
         $add_product->save();
-
         // Thực hiện 3
         $max_id_product = DB::table('products')->max('id');
-
         //Thực hiện 4
         $add_pro_sup = new ProductSupplier();
         $add_pro_sup->product_id = $max_id_product;
         $add_pro_sup->supplier_id= $request->input('inputSupplier');
         $add_pro_sup->save();
 
-        return redirect('page-list-product')->with('message1','');
+        return redirect('page-list-product')->with('success','');
     }
-
-    //them chi tiet sp
-    // public function add_pdetail(){
-
-    //     return view('admin.product_manage.add_dproduct');
-
-    // }
 
     //HÀM XÓA SẢN PHẨM
     public function delete_product($id_product){
@@ -344,24 +338,19 @@ class AdminController extends Controller
         return redirect()->back()->with('message','Đã xóa sản phẩm thành công!');
     }
 
-    //Hàm chỉnh sửa sản phẩm
-    public function edit_product($id){
-        $infor_product = Product::find($id);
-        $get_ps = ProductSupplier::where('product_id',$id)->first();
-        return view('admin.product_manage.edit_product', [
-            'infor_product'=>$infor_product,
-            'get_ps'=>$get_ps
-        ]);
-    }
-
     //Cập nhật thông tin sản phẩm
     public function update_product(Request $request, $id_product, $id_pro_sub){
+        $get_discount = $request->input('inputDiscount');
+        $get_price = $request->input('inputPrice');
         $update_infor_product = Product:: find($id_product);
         $update_infor_product->product_name = $request->input('inputName');
-        $update_infor_product->product_price = $request->input('inputPrice');
+        $update_infor_product->product_price = $get_price;
         $update_infor_product->product_quantity  = $request->input('inputQuantity');
         $update_infor_product->unit_price = $request->input('inputUnit');
-        $update_infor_product->product_discount = $request->input('inputDiscount');
+        $update_infor_product->product_discount = $get_discount;
+
+        $discount_price = $get_price - ($get_price * $get_discount)/100;
+        $update_infor_product->pro_discount_price = $discount_price;
 
         if($request->hasFile('inputFileImage')){
             $image = $request->file('inputFileImage');
@@ -378,90 +367,16 @@ class AdminController extends Controller
         return redirect('page-list-product')->with('message','Đã cập nhật thông tin sản phẩm');
     }
 
-    //HÀM HIỂN THỊ DANH SÁCH COMBO
-    public function combo_product(){
-        $show_combos = Combo::latest()->paginate(5);
-        return view('admin.product_manage.combo_product',['show_combos'=>$show_combos]);
-    }
-
-    //Tính giảm giá tăng
-    public function increaseQty($id_combo){
-        $combo = Combo::get($id_combo);
-        $dis = $combo->combo_discount + 1;
-        $price = $combo->combo_total_price - ($combo->combo_total_price * $dis)/100;
-        Combo::updated($id_combo,$dis,$price);
-    }
-
-    //HÀM THÊM MỚI COMBO
-    public function add_combo(Request $request){
-        $add_combo = new Combo();
-        $add_combo->combo_name = $request->input('inputName');
-        $add_combo->combo_discount = $request->input('inputDiscount');
-        $add_combo->combo_total_price = 0;
-
-        if($request->hasFile('inputFileImage')){
-            $image = $request->file('inputFileImage');
-            $image_name = $image->getClientOriginalName();
-            $image->move(public_path('home/upload_img'), $image_name);
-            $add_combo->combo_img = $image_name;
-        }
-
-        $add_combo->save();
-        return redirect()->back();
-    }
-
-    //TRANG HIỂN THỊ COMBO DETAILS
-    public function combo_detail($id_combo){
-        $show_details = ComboProduct::where('combo_id',$id_combo)->get();
-        return view('admin.product_manage.combo_detail',[
-            'show_details'=>$show_details,
-            'id_combo' => $id_combo
-        ]);
-    }
-
-    //HÀM THÊM MỚI PRODUCT COMBO
-    public function add_combo_detail($id_combo,Request $request){
-        $add_cd = new ComboProduct();
-        $add_cd->combo_id = $id_combo;
-        $add_cd->product_id = $request->input('inputProduct');
-        $add_cd->quantity_combo = $request->input('inputQuantity');
-        $add_cd->save();
-        //Lấy tổng giá lúc trước khi thêm
-        $get_combo = DB::table('combos')->where('id',$id_combo)->first();   
-        $total_original = $get_combo->combo_total_price;
-        //Lấy tổng giá sản phẩm vừa mới thêm vào
-        $get_id = DB::table('combo_products')->max('id');
-        $get_max = DB::table('combo_products')->where('id',$get_id)->first();
-        //Lấy giá sản phẩm trong kho để trừ
-        $get_pro = DB::table('products')->where('id',$get_max->product_id)->first();
-        $get_total = $get_max->quantity_combo * $get_pro->product_price;
-        //Tính lại được giá tổng
-        $update_total = $total_original + $get_total;
-        DB::table('combos')->where('id',$id_combo)->update(['combo_total_price' => $update_total]);
-        return redirect()->back()->with('success','Thêm thành công');
-    }
-
-    //HÀM XÓA COMBO DETAILS
-    public function delete_product_combo($id_detail){
-        ComboProduct::where('id','=',$id_detail)->delete();
-        return redirect()->back()->with('delete','Đã xóa thành công');
-    }
-
-
-    //========HÀM TÌM SẢN PHẨM THEO CATEGORY AJAX=======//
     public function findProductName(Request $request){
         $data = Product::select('product_name','id')->where('category_id',$request->id)->get();
         return response()->json($data);
     }
-    //==================================================//
     
-    //HÀM HIỂN THỊ NHÀ CUNG CẤP
     public function product_supplier(){
         $show_suppliers = DB::table('suppliers')->latest()->paginate(5);
         return view('admin.product_manage.product_supplier',['show_suppliers'=>$show_suppliers]);
     }
 
-    //HÀM THÊM MỚI NHÀ CUNG CẤP
     public function post_supplier(Request $request){
         $add_supplier = new Supplier();
         $add_supplier->supplier_name = $request->input('inputName');
@@ -475,17 +390,14 @@ class AdminController extends Controller
             $add_supplier->supplier_img = $image_name;
         }
         $add_supplier->save();
-
         return redirect()->back()->with('message1','');
     }
 
-    //TRANG CHỈNH SỬA NHÀ CUNG CẤP
     public function edit_supplier($id){
         $infor_supplier = Supplier::find($id);
         return view('admin.product_manage.edit_supplier',['infor_supplier' =>$infor_supplier]);
     }
 
-    //HÀM CẬP NHẬT NHÀ CUNG CẤP
     public function update_supplier(Request $request,$id_sup){
         $update_sup = Supplier::find($id_sup);
         $update_sup->supplier_name = $request->input('inputName');
@@ -501,7 +413,7 @@ class AdminController extends Controller
         $update_sup->save();
         return redirect('product-supplier')->with('message','Đã cập nhật thông tin nhà cung cấp');
     }
-    //HÀM XÓA NHÀ CUNG CẤP
+    
     public function delete_supplier($id_supplier)
     {
         Supplier::where('id','=',$id_supplier)->delete();
@@ -514,6 +426,18 @@ class AdminController extends Controller
     {
         $show_orders = Order::latest()->paginate(5);
         return view('admin.order_manage.admin_order',['show_orders' => $show_orders]);
+    }
+
+    //Trang hóa đơn đặt bàn
+    public function admin_table_order(){
+        $show_order_tables = OrderTable::latest()->paginate(5);
+        return view('admin.order_manage.admin_table_order',['show_order_tables' => $show_order_tables]);
+    }
+
+    //Hàm xuất hóa đơn
+    public function export_order_table($id_ot){
+        $show_export = OrderTable::find($id_ot);
+        return view('admin.order_manage.export_order_table',['show_export'=>$show_export]);
     }
 
     //Hàm duyệt đơn hàng
@@ -529,37 +453,34 @@ class AdminController extends Controller
         return redirect()->back();
     }
 
-    //Hàm hủy đơn hàng
     public function cancel_order($id){
         Order::where('id', $id)->update(['order_status'=>3]);
         $get_details = OrderDetail::where('order_id',$id)->get();
         foreach( $get_details as $get_detail){
+            $qty = $get_detail->total_quantity; //Lấy số lượng đã đặt trong giỏ hàng ra
             $get_qty = Product::where('id',$get_detail->product_id)->first();
-            //Lấy số lượng trong kho
+            //Cộng lại số lượng từ hóa đơn vào kho
             $quantity = $get_qty->product_quantity;
-            //Lấy số lượng trong hóa đơn
-            $qty = $get_detail->total_quantity;
-            //Cộng lại vào sản phẩm ban đầu
             $result = $quantity + $qty;
-            DB::table('products')->where('id',$get_detail->product_id)->update(['product_quantity'=> $result]);
+            //Trường hợp giỏ hàng có category là gà
+            if($get_qty->category_id == 1){
+                DB::table('products')->where('category_id',1)->update(['product_quantity'=> $result]);
+            } else{
+                DB::table('products')->where('id',$get_detail->product_id)->update(['product_quantity'=> $result]);
+            }
         }
-        
         return redirect()->back()->with('message','');
     }
 
-    //Hàm hóa đơn chi tiết
     public function admin_order_detail($id)
     {
         $show_order = Order::find($id);
         return view('admin.order_manage.admin_order_detail',['show_order'=>$show_order]);
     }
 
-    //Hàm xuất hóa đơn
     public function export_order($id)
     {
         $show_export = Order::find($id);
         return view('admin.order_manage.export_order',['show_export'=>$show_export]);
     }
-
-    
 }

@@ -6,6 +6,7 @@ use App\User;
 use App\RoleAccess;
 Use Alert;
 use App\Category;
+use App\Combo;
 use App\Product;
 use App\Order;
 use App\OrderDetail;
@@ -16,7 +17,11 @@ use App\Table;
 use App\TableCart;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
+use Validator;
+use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\Mail;
+use Exception;
+use Illuminate\Validation\ValidationException;
 class HomeController extends Controller
 {
     //Trang chủ
@@ -26,12 +31,33 @@ class HomeController extends Controller
 
     //Trang xử lí đăng ký
     public function post_sign_up(Request $request){
-        $this->validate($request,[
-            'user_name'=>'unique:users,user_name'
-        ],[
-            'user_name.unique'=>'Tên tài khoản đã tồn tại!'
-        ]
-        );
+        try{
+            $this->validate($request,[
+                'full_name' => 'required',
+                'user_name'=>'required|unique:users,user_name',
+                'email' => 'required|unique:users,email',
+                'password' => 'required',
+                'confirm' => 'required',
+                'gender' => 'required',
+                'address' => 'required',
+                'birthday' => 'required',
+                'phone' => 'required'
+            ],[
+                'full_name.required' => 'Vui lòng nhập đầy đủ họ tên',
+                'user_name.unique'=>'Tên tài khoản đã tồn tại!',
+                'email.unique' => 'Email đã tồn tại',
+                'email.required' => 'Vui lòng nhập email',
+                'user_name.required' => 'Vui lòng nhập tên tài khoản của bạn',
+                'password.required' => 'Vui lòng nhập mật khẩu',
+                'confirm.required' => 'Vui lòng xác nhận mật khẩu',
+                'gender.required' => 'Vui lòng cung cấp giới tính',
+                'address.required' => 'Vui lòng nhập địa chỉ',
+                'birthday.required' => 'Vui lòng nhập ngày sinh',
+                'phone.required' => 'Vui lòng nhập Số điện thoại',
+            ]
+            );
+        }catch (ValidationException $e) {
+        }
 
         $add_sign_up = new User();
         $add_sign_up->role_id  = 3;
@@ -41,10 +67,16 @@ class HomeController extends Controller
         $add_sign_up->email = $request->input('email');
         $add_sign_up->address = $request->input('address');
         $add_sign_up->phone = $request->input('phone');
-        
+
+        if($request->hasFile('inputFileImage')){
+            $image = $request->file('inputFileImage');
+            $image_name = $image->getClientOriginalName();
+            $image->move(public_path('home/upload_img'), $image_name);
+            $add_sign_up->avatar = $image_name;
+        }
         $add_sign_up->save();
 
-        return redirect('page-login')->with('alert', 'Đăng ký tài khoản thành công! Vui lòng đăng nhập ');
+        return redirect('/')->with('alert', 'Đăng ký tài khoản thành công! Vui lòng đăng nhập ');
     }
 
     //Hàm xử lí đăng nhập
@@ -53,7 +85,7 @@ class HomeController extends Controller
         $password = $request->input('password');
 
         if(Auth::attempt(['user_name' => $user_name, 'password' => $password, 'role_id' => 3])){
-            return redirect('/')->with('message1','');
+            return redirect()->back()->with('message1','');
         }else{
             $message = $request->session()->get('message2');
             return redirect()->back()->with('message2','');
@@ -70,6 +102,72 @@ class HomeController extends Controller
     public function page_sign_up(){
         return view('home.page_sign_up');
     }
+    //Đăng nhập bằng facebook
+    public function facebookRedirect(){
+        return Socialite::driver('facebook')->redirect();
+    }
+    public function loginWithFacebook()
+    {
+        try {
+            $user = Socialite::driver('facebook')->user();
+            $isUser = User::where('facebook_id', $user->id)->first();
+            // dd(getType($user->id));
+            if(isset($isUser)){
+                Auth::login($isUser);
+                return redirect('/')->with('message1','Đăng nhập thành công');
+            }
+            else{
+                $createUser = User::create([
+                    'role_id' => 3,
+                    'full_name' => $user->name,
+                    'email' => $user->email,
+                    'facebook_id' => $user->id,
+                    'password' => encrypt('admin@123')
+                ]);
+                Auth::login($createUser);
+                return redirect('/')->with('message1','Đăng nhập thành công');
+            } 
+        }catch (Exception $exception) {
+            dd($exception->getMessage());
+        }
+    }
+
+    //Đăng nhập bằng google
+    public function googleRedirect(){
+        return Socialite::driver('google')->redirect();
+    }
+    public function loginWithGoogle(){
+        try {
+    
+            $user = Socialite::driver('google')->user();
+     
+            $finduser = User::where('google_id', $user->id)->first();
+            if($finduser){
+     
+                Auth::login($finduser);
+    
+                return redirect('/')->with('message1','Đăng nhập thành công');
+     
+            }else{
+                $newUser = User::create([
+                    'role_id' => 3,
+                    'full_name' => $user->name,
+                    'user_name'=>"gg_acc",
+                    'email' => $user->email,
+                    'google_id'=> $user->id,
+                    'password' => encrypt('123456dummy')
+                ]);
+    
+                Auth::login($newUser);
+     
+                return redirect('/')->with('message1','Đăng nhập thành công');
+            }
+    
+        } catch (Exception $e) {
+            dd($e->getMessage());
+        }
+    }
+
 
     //Trang đăng nhập
     public function page_login(){
@@ -160,18 +258,20 @@ class HomeController extends Controller
         $get_cart_user = ShoppingCart::where([['id','=',$id_cart],['user_id','=',$id_user]])->first();
         //Lấy id cart vừa nhận
         $get_cart = $get_cart_user->id;
-        //Lấy id sản phẩm sau đó lấy số lượng
-        $get_product = Product::where('id',$get_cart_user->product_id)->first();
-        $get_qty_pro = $get_product->product_quantity;
         //Lấy số lượng input request
         $get_qty = $request->input('quantity');
-        if($get_qty > $get_qty_pro){
-            return redirect()->back()->with('alert','Số lượng sản phẩm không đủ');
-        }else{
-            $update_cart = ShoppingCart::find($get_cart);
-            $update_cart->quantity = $request->input('quantity');
-            $update_cart->save();
-            return redirect()->back();
+        if($get_cart_user->product_id != NULL){
+            //Lấy id sản phẩm sau đó lấy số lượng
+            $get_product = Product::where('id',$get_cart_user->product_id)->first();
+            $get_qty_pro = $get_product->product_quantity;
+            if($get_qty > $get_qty_pro){
+                return redirect()->back()->with('alert','Số lượng sản phẩm không đủ');
+            }else{
+                $update_cart = ShoppingCart::find($get_cart);
+                $update_cart->quantity = $get_qty;
+                $update_cart->save();
+                return redirect()->back();
+            }
         }
     }
 
@@ -195,6 +295,45 @@ class HomeController extends Controller
         }
    }
 
+   //Hàm thêm chi tiết sp vào giỏ hàg
+   public function add_cart_detail(Request $request,$id,$id_user){
+        $qty = $request->input('inputQty');
+        $check_cart = ShoppingCart::where([['product_id','=',$id],['user_id','=',$id_user]])->first();
+        if(isset($check_cart)){
+            $get_id = $check_cart->id;
+            $update_cart = ShoppingCart::find($get_id);
+            $update_cart->quantity = $update_cart->quantity + $qty;
+            $update_cart->save();
+        }else{
+            $add_cart = new ShoppingCart();
+            $add_cart->user_id = $id_user;
+            $add_cart->product_id = $id;
+            $add_cart->quantity = $qty;
+            $add_cart->save();
+        }
+        return redirect()->back()->with('message','');
+   }
+
+    //Hàm thêm combo vào giỏ hàng
+    public function add_combo_cart($id_user,$id_combo){
+        //Tìm xem có tồn tại sản phẩm trong giỏ hàng chưa
+        $get_cart = ShoppingCart::where([['combo_id','=',$id_combo],['user_id','=',$id_user]])->first();
+        if(isset($get_cart)){
+            $get_id = $get_cart->id;
+            $update_cart = ShoppingCart::find($get_id);
+            $update_cart->quantity = $update_cart->quantity + 1;
+            $update_cart->save();
+            return redirect()->back()->with('message','');
+        }else {
+            $add_cart = new ShoppingCart();
+            $add_cart->user_id = $id_user;
+            $add_cart->combo_id = $id_combo;
+            $add_cart->quantity = 1;
+            $add_cart->save();
+            return redirect()->back()->with('message','');
+        }
+    }
+
    //Hàm xóa sản phẩm trong giỏ hàng
    public function delete_product_cart($id_cart){
        ShoppingCart::where('id',$id_cart)->delete();
@@ -215,6 +354,7 @@ class HomeController extends Controller
         $get_carts = ShoppingCart::where('user_id',$id_user)->get();
         //Xử lí trong hóa đơn chi tiết
         foreach($get_carts as $get_cart){
+            //===Trường hợp giỏ hàng chứa sản phẩm
             //Lấy id sản phẩm để truy xuất giá sp
             $get_prices = Product::where('id',$get_cart->product_id)->first();
             //Thêm vào Order-Details
@@ -260,7 +400,7 @@ class HomeController extends Controller
         $vnp_TmnCode = "UDOPNWS1"; //Mã website tại VNPAY
         $vnp_HashSecret = "EBAHADUGCOEWYXCMYZRMTMLSHGKNRPBN"; //Chuỗi bí mật
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        $vnp_Returnurl = "http://localhost/hurricane2/return-page-vnpay-checkout";
+        $vnp_Returnurl = "http://localhost/hurricane.com.vn/return-page-vnpay-checkout";
         $vnp_TxnRef = date("YmdHis"); //Mã đơn hàng. Trong thực tế Merchant cần insert đơn hàng vào DB và gửi mã này sang VNPAY
         $vnp_OrderInfo = $request->input('order_desc');//noi dung thanh toan
         $vnp_OrderType = 200000; //ma loai san pham thanh toan
@@ -374,43 +514,38 @@ class HomeController extends Controller
         return view('home.page_category',['show_cates' => $show_cates]);
     }
 
-    //Thanh sản phẩm
-    public function page_product($category_name,$id_category){
-        $category_id = Category::find($id_category);
-        $show_products = Product::where('category_id',$id_category)->latest()->get();
+    //Trang sản phẩm
+    public function page_product(Request $request,$id_category){
+        $search = $request->input('inputSearch');
+        if ($search != "") {
+            $show_products = Product::where('product_name', 'like', '%'.$search.'%')->get();
+        } else{
+            // $category_id = Category::find($id_category);
+            $show_products = Product::where('category_id',$id_category)->latest()->get();
+        }
         return view('home.page_product',
-        [
-            'category_id'=>$category_id,
-            'show_products'=>$show_products
+            [
+                'category_id'=>$id_category,
+                'show_products'=>$show_products 
         ]);
     }
 
+    public function page_product_detail($id){
+        $get_product = Product::where('id',$id)->first();
+        return view('home.product_detail',['get_product'=>$get_product]);
+    }
+
+    //Trang combo 
+    public function page_combo(){
+        $get_combo = DB::table('combos')->get();
+        return view('home.page_combo',['get_combo'=>$get_combo]);
+    }
 
     //Trang đặt bàn
     public function page_table(){
         $show_tables = DB::table('tables')->get();
         return view('home.order_table.page_table',['show_tables'=>$show_tables]);
     }
-
-    //Trang table cart
-    public function page_table_cart($id_table){
-        $id = $id_table;
-        $find_table = TableCart::where('table_id',$id)->first();
-        if(isset($find_table)){
-            $show_table_carts = TableCart::where('table_id',$id_table)->get();
-            return view('home.order_table.page_table_cart',[
-                'show_table_carts'=>$show_table_carts,
-                'id'=>$id
-            ]);
-        }else{
-            // Show giỏ hàng của bàn đã chọn
-            $show_table_carts = TableCart::where('table_id',$id_table)->get();
-            return view('home.order_table.page_table_cart',[
-                'show_table_carts'=>$show_table_carts,
-                'id'=>$id
-            ]);
-        }
-    } 
 
     //Trang Table_Category
     public function page_table_category($id_table){
@@ -435,85 +570,24 @@ class HomeController extends Controller
         ]);
     }
 
-    //HÀM THÊM SẢN PHẨM VÀO TABLE CART
-    public function add_table_cart($id_product,$id_table){
-        $get_carts = TableCart::where([['product_id','=',$id_product],['table_id','=',$id_table]])->first();
-        //Tìm xem đã tồn tại sp trong table cart chưa
-        if(isset($get_carts)){
-            $get_id = $get_carts->id;
-            $update_cart = TableCart::find($get_id);
-            $update_cart->tc_quantity = $update_cart->tc_quantity + 1;
-            $update_cart->save();
-            return redirect()->back()->with('message','');
-        }else{
-            $add_cart = new TableCart();
-            $add_cart->table_id = $id_table;
-            $add_cart->product_id = $id_product;
-            $add_cart->tc_quantity = 1;
-            $add_cart->save();
-            DB::table('tables')->where('id',$id_table)->update(['table_status'=> 1]);
-            return redirect()->back()->with('message','');
-        }
+    public function post_feedback(Request $request)
+    {
+        // if ($this->isOnline()) {
+            $mail_data = [
+                'recipient' => 'odinkingiv@gmail.com',
+                'fromName' => $request->input('inputName'),
+                'fromEmail' => $request->input('inputEmail'),
+                'phone' => $request->input('inputPhone'),
+                'subject' => $request->input('inputTitle'),
+                'body' => $request->input('inputText')
+            ];
+            Mail::send('layout.email-template', $mail_data, function ($message) use ($mail_data) {
+                $message->to($mail_data['recipient'])
+                    ->from($mail_data['fromEmail'], $mail_data['fromName'])
+                    ->subject($mail_data['subject']);
+            });
+            return redirect()->back()->with("alert", "Email đã được gửi!");
+        // }
     }
 
-    //HÀM XÓA SẢN PHẨM TRONG TABLE_CART
-    public function delete_product_tc($id_tc){
-        TableCart::where('id',$id_tc)->delete();
-       return redirect()->back()->with('message','');
-    }
-
-    //HÀM HỦY TABLE_CART
-    public function cancel_table_cart($id_table){
-        TableCart::where('table_id',$id_table)->delete();
-        DB::table('tables')->where('id',$id_table)->update(['table_status'=> 0]);
-        return redirect('page-table')->with('alert','Hủy bàn thành công!');
-    }
-
-    //HÀM THANH TOÁN TABLE CART
-    public function post_table_cart(Request $request,$id_table){
-        //Thêm hóa đơn mới
-        $add_ot = new OrderTable();
-        $add_ot->ot_status = 0;
-        $add_ot->ot_payment = 0;
-        $add_ot->save();
-        //Lấy đơn hàng mới nhất
-        $get_ot = DB::table('order_tables')->max('id');
-        //Lấy giỏ hàng của table
-        $get_carts = TableCart::where('table_id',$id_table)->get();
-        //Xử lí trong ot detail
-        foreach($get_carts as $get_cart){
-            //Lấy id sp để truy xuất giá
-            $get_products = Product::where('id',$get_cart->product_id)->first();
-            $price = $get_products->product_price;
-            //Thêm vào ot details
-            $add_otd = new OtDetail();
-            $add_otd->ot_id = $get_ot;
-            $add_otd->product_id = $get_products->id;
-            $add_otd->ot_quantity = $request->input('inputQty');
-            $add_otd->ot_price = $price * $add_otd->ot_quantity;
-            $add_otd->save();
-            //Lấy sổ lượng sp trong table cart và trong kho
-            $qty_cart = $add_otd->ot_quantity;
-            $get_qty = $get_products->product_quantity;
-            //Trừ tồn kho => nếu là gà rán thì trừ hết cate (dùng foreach), còn lại trừ đúng 1 id và cập nhật số lượng
-            if($get_products->category_id == 1){
-                foreach($get_products as $get_product){
-                    $quantity = ($get_qty - $qty_cart);
-                    DB::table('products')->where('category_id',1)->update(['product_quantity'=> $quantity]);
-                }
-            }else{
-                $quantity = ($get_qty - $qty_cart);
-                DB::table('products')->where('id',$get_products->id)->update(['product_quantity'=> $quantity]);
-            }
-        }
-        //Xóa giỏ hàng và trả lại trang đặt bàn
-        DB::table('table_carts')->where('table_id',$id_table)->delete();
-        //Cập nhật lại table status
-        DB::table('tables')->where('id',$id_table)->update(['table_status'=> 0]);
-        return redirect('page-table')->with('alert','Thanh toán thành công!!!');
-    }
-
-    public function search(Request $request){
-        
-    }
 }

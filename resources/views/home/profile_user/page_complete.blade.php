@@ -21,26 +21,55 @@
 
                     <?php $total_payment = 0; ?>
 
-                    @foreach($get_details as $get_detail)
+                    @foreach($get_details as $key => $get_detail)
+                        @if($get_detail->product_id != NULL)
                         @php($get_product = DB::table('products')->where('id', $get_detail->product_id)->first())
+                            <tr>
+                                <td data-label="Hình ảnh">
+                                    <a href="#">
+                                        <img class="shop_thumbnail" src="{{url('public/home/upload_img/'.$get_product->product_img)}}" width="50" height="50" >
+                                    </a>
+                                </td>
+                                <td data-label="Tên SP">
+                                    {{ $get_product->product_name }}
+                                </td>
+                                <td data-label="Giá">
+                                {{ number_format($get_product->product_price )}} VND
+                                </td>
+                                <td data-label="Số lượng">
+                                {{ $get_detail->total_quantity }}
+                                </td>
+                                <td data-label="Tổng tiền">
+                                    <?php
+                                        $price = $get_product->product_price;
+                                        $qty = $get_detail->total_quantity;
+                                        $total = $price* $qty;
+
+                                        $total_payment = $total_payment + $total;
+                                    ?>
+                                    {{ number_format($total) }} VND
+                                </td>
+                            </tr>
+                        @else
+                        @php($get_combo = DB::table('combos')->where('id', $get_detail->combo_id)->first())
                         <tr>
                             <td data-label="Hình ảnh">
                                 <a href="#">
-                                    <img class="shop_thumbnail" src="{{url('public/home/upload_img/'.$get_product->product_img)}}" width="50" height="50" >
+                                    <img class="shop_thumbnail" src="{{url('public/home/upload_img/'.$get_combo->combo_img)}}" width="50" height="50" >
                                 </a>
                             </td>
                             <td data-label="Tên SP">
-                                {{ $get_product->product_name }}
+                                {{ $get_combo->combo_name }}
                             </td>
                             <td data-label="Giá">
-                               {{ number_format($get_product->product_price )}} VND
+                            {{ number_format($get_combo->combo_total_price )}} VND
                             </td>
                             <td data-label="Số lượng">
-                               {{ $get_detail->total_quantity }}
+                            {{ $get_detail->total_quantity }}
                             </td>
                             <td data-label="Tổng tiền">
                                 <?php
-                                    $price = $get_product-> product_price;
+                                    $price = $get_combo->combo_total_price;
                                     $qty = $get_detail->total_quantity;
                                     $total = $price* $qty;
 
@@ -49,6 +78,7 @@
                                 {{ number_format($total) }} VND
                             </td>
                         </tr>
+                        @endif
                     @endforeach
                     <tr>
                         <td colspan="2">

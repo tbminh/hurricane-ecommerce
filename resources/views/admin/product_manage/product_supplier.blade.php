@@ -58,41 +58,73 @@
                             </tr>
                             </thead>
                             <tbody>
-                                @forelse($show_suppliers as $key => $data)
-                            <tr>
-                                <td>{{ ++$key }}</td>
-                                <td>{{$data->supplier_name}}</td>
-                                <td>{{$data->supplier_address}}</td>
-                                <td>{{$data->supplier_describe}}</td>
-
-                                <td>
-                                    <img src="{{ url('public/home/upload_img/'.$data->supplier_img)}}"
-                                         class="img-circle elevation-2" alt="Product Image" width="30px" height="30px">
-                                </td>
-
-                                <td>
-                                    <a class="btn btn-danger btn-sm" href="{{url('delete-supplier/'.$data->id) }}" role="button" onclick="return confirm('Bạn có chắc muốn xóa không?');">
-                                        <i class="fa fa-trash"></i> Xóa
-                                    </a>
-                                </td>
-
-
-                                <td>
-                                    <a class="btn btn-primary btn-sm" href="{{ url('edit-supplier/'.$data->id) }}" role="button">
-                                        <i class="fas fa-edit"></i> Đổi
-                                    </a>
-                                </td>
-
-                            </tr>
-                                @empty
+                                @foreach($show_suppliers as $key => $data)
                                     <tr>
+                                        <td>{{ ++$key }}</td>
+                                        <td>{{$data->supplier_name}}</td>
+                                        <td>{{$data->supplier_address}}</td>
+                                        <td>{{$data->supplier_describe}}</td>
+
                                         <td>
-                                        <td colspan="11">
-                                            <b class="text-danger">Không có dữ liệu </b>
+                                            <img src="{{ url('public/home/upload_img/'.$data->supplier_img)}}"
+                                                class="img-circle elevation-2" alt="Product Image" width="30px" height="30px">
                                         </td>
+
+                                        <td>
+                                            <a class="btn btn-danger btn-sm" href="{{url('delete-supplier/'.$data->id) }}" role="button" onclick="return confirm('Bạn có chắc muốn xóa không?');">
+                                                <i class="fa fa-trash"></i> Xóa
+                                            </a>
+                                        </td>
+
+                                        <td>
+                                            <a class="btn btn-primary btn-sm" href="#" role="button" data-toggle="modal" data-target="#edit{{ $data->id }}">
+                                                <i class="fas fa-edit"></i> Đổi
+                                            </a>
                                         </td>
                                     </tr>
-                                @endforelse
+                                    <div class="modal fade" id="edit{{ $data->id }}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <form action="{{ url('update-supplier/'.$data->id) }}" method="post" enctype="multipart/form-data">
+                                                @csrf
+                                                @method('PUT')
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">THÊM NHÀ CUNG CẤP </h5>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="form-group">
+                                                                <label for="">Tên nhà cung cấp:</label>
+                                                                <input type="text" name="inputName" class="form-control" placeholder="Nhập tên sản phẩm..."
+                                                                value="{{ $data->supplier_name }}">
+                                                            </div>
+                            
+                                                            <div class="form-group">
+                                                                <label for="">Địa Chỉ:</label>
+                                                                <input type="text" name="inputAddress" class="form-control" placeholder="Nhập tên sản phẩm..."
+                                                                value="{{ $data->supplier_address }}">
+                                                            </div>
+                            
+                                                            <div class="form-group">
+                                                                <label for="">Mô tả</label>
+                                                                <textarea class="form-control" name="inputDescribe"  rows="6" placeholder="Nhập mô tả...">{{ $data->supplier_describe }}</textarea>
+                                                            </div>
+                            
+                                                            <div class="form-group">
+                                                                <label for="">Hình ảnh: </label>
+                                                                <input type='file' name="inputFileImage">
+                                                                <img id="blah" src="{{ url('public/home/upload_img/'.$data->supplier_img)}}" alt="Hình Ảnh" style="max-width:100%; height:80px; border: 2px solid #bdc3c7;"/>
+                                                            </div>
+                                                            <div class="form-group row">
+                                                                <div class="col-12 text-right">
+                                                                    <button type="submit" class="btn btn-primary btn-sm">Cập Nhật</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>

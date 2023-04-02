@@ -1,5 +1,5 @@
 @extends('layout.layout')
-@section('title','Trang món ăn')
+@section('title','Trang combo')
 @section('content')
 
 <style>
@@ -91,12 +91,7 @@
     <div class="container">
      <div class="row">
         <div class="collection_text">
-            @if($category_id == 0)
-                Sản Phẩm Tìm Kiếm
-            @else
-                @php($get_name = DB::table('categories')->where('id',$category_id)->first())
-                {{ $get_name->category_name }}
-            @endif
+            {{-- {{ $category_id->category_name }} --}}
         </div>
      </div> 
     </div>
@@ -108,50 +103,32 @@
             <li>
                 <div class="content">
                     <div class="row">
-                        @forelse ($show_products as $show_product)
+                        @foreach ($get_combo as $data)
                             <div class="col-md-3">
                                 <div class="pro">
-                                    <div class="field-img">
-                                        @if($show_product->product_status == 1)
-                                            <div class="img-status">
-                                                <img src="{{ asset('public/home/upload_img/best.gif')}}">
-                                            </div>
-                                        @elseif($show_product->product_status == 2)  
-                                            <div class="img-new">
-                                                <img src="{{ asset('public/home/upload_img/new.gif')}}" width="80" height="60">
-                                            </div>
-                                         @endif    
-                                        <a href="{{ url('page-product-detail/'.$show_product->id) }}">
-                                            <img src="{{ asset('public/home/upload_img/'.$show_product->product_img) }}" width="236" height="165">
-                                        </a>
+                                    <div class="field-img">  
+                                        <a href="{{ url('page-product-detail/'.$data->id) }}"><img src="{{ asset('public/home/upload_img/'.$data->combo_img) }}" width="236" height="165"></a>
                                     </div>
                                     <h3>
-                                        <a href="{{ url('page-product-detail/'.$show_product->id) }}">{{ $show_product->product_name }}</a>
+                                        <a href="{{ url('page-product-detail/'.$data->id) }}">{{ $data->combo_name }}</a>
                                     </h3>
                                     <div class="field-price">
-                                        <span>{{ number_format($show_product->product_price)  }}₫/{{ $show_product->unit_price }}</span>
+                                        <span>{{ number_format($data->combo_total_price)  }}₫/Combo</span>
                                     </div>
                                     <div class="field-btn">
                                         @if (Auth::check())
-                                            <a href="{{ url('add-cart/'.Auth::id().'/'.$show_product->id) }}">
+                                            <a href="{{ url('add-combo-cart/'.Auth::id().'/'.$data->id) }}">
                                                 <i class="fa fa-shopping-cart"></i> Thêm vào giỏ 
                                             </a>
                                         @else
-                                            <a type="button" onclick="return confirm('Bạn cần đăng nhập trước !!')" href="#" data-toggle="modal" data-target="#exampleModalSignIn">
+                                            <a type="button" onclick="return nonlogin('Bạn cần đăng nhập trước !!')" href="#">
                                                 <i class="fa fa-shopping-cart"></i> Thêm vào giỏ 
                                             </a>
                                         @endif
                                     </div>
                                 </div>
-                            </div>  
-                        @empty
-                            <div class="alert alert-dark" role="alert" style="margin-left: 188px;">
-                                <h4 class="alert-heading">Không tìm thấy!</h4>
-                                <p>Sản phẩm mà bạn tìm kiếm không có trong cửa hàng của chúng tôi</p>
-                                <hr>
-                                <p class="mb-0">Vui lòng nhập lại để tìm kiếm hoặc có thể truy cập vào trang menu để chọn món.</p>
-                            </div>
-                        @endforelse
+                            </div>   
+                        @endforeach
                     </div>
                 </div>
             </li>
@@ -169,4 +146,12 @@
             })
         </script>
 @endif
+<script>
+	function nonlogin(msg){
+		if(window.confirm(msg)){
+			return true;
+		}
+		return false;
+	}
+</script>
 @endsection

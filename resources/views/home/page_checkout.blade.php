@@ -32,20 +32,20 @@
         <div class="row">
             <div class="col-md-4">
                 <div id="customer_details" class="col2-set">
-                        <div class="woocommerce-billing-fields"><br><br>
-                            <h3><b>THÔNG TIN</b> </h3>
-                            <label class="" for="billing_country">
-                                <b style="font-size: 18px">
-                                    <p>Họ Tên: {{ Auth::user()->full_name }}</p>
-                                    <p>Điện Thoại: {{ Auth::user()->phone }}</p>
-                                    <p>Email: {{ Auth::user()->email }}</p>
-                                    <p>Địa chỉ: {{ Auth::user()->address }}</p>
-                                    <a href="{{ url('page-edit-user/'.Auth::id()) }}" class="btn btn-danger">
-                                        Thay đổi thông tin
-                                    </a>
-                                </b>
-                            </label>
-                        </div>
+                    <div class="woocommerce-billing-fields"><br><br>
+                        <h3><b>THÔNG TIN</b> </h3>
+                        <label class="" for="billing_country">
+                            <b style="font-size: 18px">
+                                <p>Họ Tên: {{ Auth::user()->full_name }}</p>
+                                <p>Điện Thoại: {{ Auth::user()->phone }}</p>
+                                <p>Email: {{ Auth::user()->email }}</p>
+                                <p>Địa chỉ: {{ Auth::user()->address }}</p>
+                                <a href="{{ url('page-edit-user/'.Auth::id()) }}" class="btn btn-danger">
+                                    Thay đổi thông tin
+                                </a>
+                            </b>    
+                        </label>
+                    </div>
                 </div>
             </div>
             
@@ -69,8 +69,10 @@
                                     </thead>
                                     <?php $total_price = 0; ?>
                                     @foreach ($show_carts as $key => $data)
-                                        @php($get_product = DB::table('products')->where('id', $data->product_id)->first())
                                         <tbody>
+                                            {{-- Hiển thị sản phẩm trong order --}}
+                                            @if($data->product_id != NULL)
+                                                @php($get_product = DB::table('products')->where('id', $data->product_id)->first())
                                                 <tr>
                                                     <td><span>{{ ++$key }}</span></td>
                                                     <td class="product-image">
@@ -100,6 +102,39 @@
                                                         <span class="amount">{{ number_format($total) }} VND</span>
                                                     </td>
                                                 </tr>
+                                            {{-- Hiển thị combo trong order --}}
+                                            @else
+                                                @php($get_combo = DB::table('combos')->where('id', $data->combo_id)->first())
+                                                <tr>
+                                                    <td><span>{{ ++$key }}</span></td>
+                                                    <td class="product-image">
+                                                        <a href="#">
+                                                            <img class="shop_thumbnail" src="{{asset('public/home/upload_img/'.$get_combo->combo_img)}}">
+                                                        </a>
+                                                    </td>
+
+                                                    <td data-label="Tên sản phẩm">
+                                                        <a href="#" style="color:#1abc9c">
+                                                            {{ $get_combo->combo_name }}
+                                                        </a>
+                                                    </td>
+                                                    <td data-label="Giá sản phẩm" >
+                                                        <span class="amount" >{{ number_format($get_combo->combo_total_price) }} VND/Combo</span>
+                                                    </td>
+                                                    <td data-label="Số lượng">
+                                                        <span>{{ $data->quantity }}</span>
+                                                    </td>
+                                                    <td data-label="Tổng đơn hàng">
+                                                        <?php
+                                                            $price = $get_combo->combo_total_price;
+                                                            $qty = $data->quantity;
+                                                            $total = $price * $qty;
+                                                            $total_price = $total_price + $total;
+                                                        ?>
+                                                        <span class="amount">{{ number_format($total) }} VND</span>
+                                                    </td>
+                                                </tr>
+                                            @endif
                                         </tbody>
                                     @endforeach    
                                 </table>
@@ -122,7 +157,7 @@
                                             </td>
                                             <td>
                                                     <span>
-                                                        Miễn phí vận chuyển trong khu vực
+                                                        Miễn phí trong khu vực Cần Thơ
                                                     </span>
                                             </td>
                                         </tr>
@@ -142,9 +177,9 @@
                                                 <button type="submit" value="THANH TOÁN" class="btn btn-danger btn-lg" name="update_cart">
                                                    <i class="fa fa-check"></i> THANH TOÁN
                                                 </button>
-                                                <a href="{{url('checkout-vnpay/'.$total_price.'/'.Auth::id())}}" class="btn btn-outline-info"> 
+                                                {{-- <a href="{{url('checkout-vnpay/'.$total_price.'/'.Auth::id())}}" class="btn btn-outline-info"> 
                                                     THANH TOÁN VNPAY <img src="{{ asset('public/home/upload_img/vnpay.png') }}" height="40" width="40">
-                                                </a>
+                                                </a> --}}
                                             </td>
                                         </tr>
                                     </tfoot>
