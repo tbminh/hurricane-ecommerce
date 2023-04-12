@@ -375,7 +375,8 @@ class HomeController extends Controller
 
     //Thanh sản phẩm
     public function page_product($id_category){
-        $category_id = DB::table('categories')->where('id',$id_category)->first();
+        // $category_id = DB::table('categories')->where('id',$id_category)->first();
+        $category_id = Category::find($id_category);
         $show_products = Product::where('category_id',$id_category)->latest()->get();
         return view('home.page_product',
         [

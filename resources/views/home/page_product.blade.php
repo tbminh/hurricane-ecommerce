@@ -83,18 +83,16 @@
         left: 0;
         z-index: 3;
     }
-    
-    
 </style>
 
 <section id="test">
     <div class="container">
      <div class="row">
         <div class="collection_text">
-            @if($category_id == 0)
+            @if($category_id->id == 0)
                 Sản Phẩm Tìm Kiếm
             @else
-                @php($get_name = DB::table('categories')->where('id',$category_id)->first())
+                @php($get_name = DB::table('categories')->where('id',$category_id->id)->first())
                 {{ $get_name->category_name }}
             @endif
         </div>
