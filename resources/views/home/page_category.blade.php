@@ -2,7 +2,10 @@
 @section('title','Trang thực đơn')
 @section('content')
 <style>
-   
+   .products_2 img {
+        width: 330px;
+        height: 284px;
+   }
 </style>
 <div class="collection_text">
     MENU
@@ -26,5 +29,4 @@
         </div>
     </div>
 </section>
-
 @endsection

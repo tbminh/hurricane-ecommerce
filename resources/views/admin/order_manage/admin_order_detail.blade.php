@@ -69,43 +69,23 @@
                         <?php $total_price = 0; ?>
                         @php($get_details = DB::table('order_details')->where('order_id', $show_order->id)->get())
                         @foreach($get_details as $key =>$data)
-                            @if($data->product_id != NULL)
-                                <tr>
-                                    <td class="center">{{ ++$key }} </td>
-                                    @php($get_product = DB::table('products')->where('id', $data->product_id)->first())
-                                    <td class="left strong">{{$get_product->product_name}}</td>
-                                    <td class="center"><img src="{{ url('public/home/upload_img/'.$get_product->product_img) }}" class="img-circle elevation-2" alt="User Image " width="30px" height="30px"></td>
-                                    <td class="left">{{ number_format($get_product->product_price)}} VND</td>
-                                    <td class="right">{{ $data->total_quantity }}</td>
-                                    <td class="right">
-                                        <?php
-                                        $price = $get_product->product_price;
-                                        $qty = $data ->total_quantity;
-                                        $total = $price * $qty;
-                                        $total_price = $total_price + $total;
-                                        ?>
-                                        <span class="amount">{{ number_format($total_price) }} VND</span>
-                                    </td>
-                                </tr>
-                            @else
-                                <tr>
-                                    <td class="center">{{ ++$key }} </td>
-                                    @php($get_combo = DB::table('combos')->where('id', $data->combo_id)->first())
-                                    <td class="left strong">{{$get_combo->combo_name}}</td>
-                                    <td class="center"><img src="{{ url('public/home/upload_img/'.$get_combo->combo_img) }}" class="img-circle elevation-2" alt="User Image " width="30px" height="30px"></td>
-                                    <td class="left">{{ number_format($get_combo->combo_total_price)}} VND</td>
-                                    <td class="right">{{ $data->total_quantity }}</td>
-                                    <td class="right">
-                                        <?php
-                                        $price = $get_combo->combo_total_price;
-                                        $qty = $data ->total_quantity;
-                                        $total = $price * $qty;
-                                        $total_price = $total_price + $total;
-                                        ?>
-                                        <span class="amount">{{ number_format($total_price) }} VND</span>
-                                    </td>
-                                </tr>
-                            @endif
+                            <tr>
+                                <td class="center">{{ ++$key }} </td>
+                                @php($get_product = DB::table('products')->where('id', $data->product_id)->first())
+                                <td class="left strong">{{$get_product->product_name}}</td>
+                                <td class="center"><img src="{{ url('public/home/upload_img/'.$get_product->product_img) }}" class="img-circle elevation-2" alt="User Image " width="30px" height="30px"></td>
+                                <td class="left">{{ number_format($get_product->product_price)}} VND</td>
+                                <td class="right">{{ $data->total_quantity }}</td>
+                                <td class="right">
+                                    <?php
+                                    $price = $get_product->product_price;
+                                    $qty = $data ->total_quantity;
+                                    $total = $price * $qty;
+                                    $total_price = $total_price + $total;
+                                    ?>
+                                    <span class="amount">{{ number_format($total_price) }} VND</span>
+                                </td>
+                            </tr>
                         @endforeach
                         </tbody>
                     </table>

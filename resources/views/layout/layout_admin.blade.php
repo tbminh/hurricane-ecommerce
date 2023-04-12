@@ -170,7 +170,6 @@
                 <span class="brand-text font-weight-light" style="color:white; font-size:20px;">
                     URRICANE
                 </span>
-                
             </a>
         </div>
 
@@ -188,13 +187,12 @@
                        </div>
                 </div>
             @endif
-
         <!-- Sidebar Menu -->
             <nav class="mt-2">
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                     <!-- Add icons to the links using the .nav-icon class
                          with font-awesome or any other icon font library -->
-                    <li class="nav-item has-treeview">
+                    <li class="nav-item">
                         <a href="{{ url('page-admin') }}" class="nav-link">
                             <i class="fa fa-table"></i>
                             <p>
@@ -274,7 +272,6 @@
                             <i class="fa fa-list-ol" aria-hidden="true"></i>
                             <p>
                                 Quản lí hóa đơn
-                                <i class="right fas fa-angle-left"></i>
                             </p>
                         </a>
                     </li>

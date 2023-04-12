@@ -15,7 +15,7 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-
+            // Khai báo khóa ngoại role_access
             $table->unsignedBigInteger('role_id');
             $table->foreign('role_id')->references('id')->on('role_accesses')->onDelete('cascade');
 

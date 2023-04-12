@@ -132,9 +132,6 @@
 				  <a href="{{ url('page-product/'.Str::slug($data->category_name).'/'.$data->id) }}">{{ $data->category_name }}</a>
 			  </li>
 		  @endforeach
-		  <li>
-			  <a href="{{ url('page-combo') }}">Combo</a>
-		  </li>
 	  </ul>
 	  </div>
 	  </div>

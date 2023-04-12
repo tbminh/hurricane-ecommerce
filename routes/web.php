@@ -13,8 +13,6 @@ Route::get('page-category','HomeController@page_category');
 //Trang sản phẩm
 Route::get('page-product/{id_category}','HomeController@page_product');
 
-//Trang combo
-Route::get('page-combo','HomeController@page_combo');
 
 //Trang chi tiết sản phẩm
 Route::get('page-product-detail/{id}','HomeController@page_product_detail');
@@ -64,13 +62,6 @@ Route::get('delete-product-cart/{id_cart}','HomeController@delete_product_cart')
 Route::get('page-checkout/{id_user}','HomeController@page_checkout');
 //Hàm thanh toán đơn hàng
 Route::post('checkout-payment/{id_user}','HomeController@checkout_payment');
-//Trang thanh toán online
-Route::get('checkout-vnpay/{total}/{id_user}','HomeController@vnpay_online');
-//Hàm tạo thông tin thanh toán online
-Route::post('checkout-online/{id_user}','HomeController@create');
-//Hàm trả về thông tin
-Route::get('return-page-vnpay-checkout','HomeController@return')->name('return_checkout_vnpay');
-
 Route::post('sending-email','HomeController@post_feedback')->name('post.feedback');
 
 //======THÔNG TIN KHÁCH HÀNG ======//
@@ -90,10 +81,6 @@ Route::get('page-shipping/{id_user}', 'HomeController@page_shipping');
 Route::get('page-complete/{id_user}', 'HomeController@page_complete');
 //Trang đã hủy
 Route::get('page-cancelled/{id_user}', 'HomeController@page_cancelled');
-
-Route::get('test',function(){
-    return view('home.test');
-});
 
 //=============================
 //============================
@@ -193,10 +180,6 @@ Route::middleware([CheckLogin::class])->group(function () {
     //========QUẢN LÝ HÓA ĐƠN=====//
     //Trang hóa đơn 
     Route::get('admin-order', 'AdminController@admin_order');
-    //Trang hóa đơn đặt bàn
-    Route::get('admin-table-order','AdminController@admin_table_order');
-    //Hàm xuất hóa đơn đặt bàn
-    Route::get('export-order-table/{id_ot}','AdminController@export_order_table');
     //Duyệt hóa đơn
     Route::get('approve-order/{id}', 'AdminController@approve_order');
     //Xác nhận đã giao hàng
@@ -207,50 +190,6 @@ Route::middleware([CheckLogin::class])->group(function () {
     Route::get('admin-order-detail/{id}', 'AdminController@admin_order_detail');
     //Xuất hóa đơn
     Route::get('export-order/{id}', 'AdminController@export_order');
-    //Trang bàn ăn - khu vực
-    Route::get('table-area','AdminController@table_area');
-    //Thêm bàn mới
-    Route::post('add-table','AdminController@add_table');
-    //Hàm sửa bàn
-    Route::put('edit-table/{id_table}','AdminController@edit_table');
-    //Hàm xóa bàn
-    Route::get('delete-table/{id_table}','AdminController@delete_table');
-
-    //==========QUẢN LÝ ĐẶT BÀN- CHỌN MÓN =================//
-    //Trang chọn bàn
-    Route::get('table-manage/{id_area}','TableController@table_manage');
-    //Trang quản lý bếp
-    Route::get('kitchen-manage/{id_table}','TableController@kitchen_manage');
-    //Trang chọn món
-    Route::get('table-menu/{id_table}/{id_cate}','TableController@table_menu');
-    //Hàm cập nhật số lượng sp trong bếp
-    Route::get('update-kitchen-quantity/{key}/{qty}','TableController@update_kitchen_quantity');
-    //Thêm product và table và table-cart
-    Route::get('add-table-cart/{id_user}/{id_table}/{id_product}','TableController@add_table_cart');
-    //Lấy sản phẩm theo table bằng ajax
-    Route::get('findTableName','TableController@findTableName');
-    //Đổi bàn 
-    Route::get('change-table/{id_table}','TableController@change_table');
-    //Ghép bàn
-    Route::put('pairing-table','TableController@pairing_table');
-    //Thêm combo và table vào table-cart
-    Route::get('add-combo-tbcart/{id_user}/{id_table}/{id_combo}','TableController@add_combo_tbcart');
-
-    //Cập nhật số lượng
-    Route::get('update-cart/{key}/{qty}','TableController@update_cart');
-
-    //Xóa table cart
-    Route::get('delete-table-cart/{id_table}','TableController@delete_table_cart');
-
-    //Xóa product trong table-cart
-    Route::get('delete-product-tc/{key}','TableController@delete_product_tc');
-
-    //Tìm kiếm sản phẩm trong table menu
-    Route::get('search-pro-table/{key}','TableController@search_pro_table');
-
-    //Hàm thanh toán table
-    Route::post('checkout-table/{id_table}','TableController@checkout_table');
-
 });
 
 
