@@ -87,16 +87,16 @@
 
 <section id="test">
     <div class="container">
-     <div class="row">
-        <div class="collection_text">
-            @if($category_id->id == 0)
-                Sản Phẩm Tìm Kiếm
-            @else
-                @php($get_name = DB::table('categories')->where('id',$category_id->id)->first())
-                {{ $get_name->category_name }}
-            @endif
-        </div>
-     </div> 
+        <div class="row">
+            <div class="collection_text">
+                @if($id_category == 0)
+                    Sản Phẩm Tìm Kiếm
+                @else
+                    @php($get_name = DB::table('categories')->where('id',$id_category)->first())
+                    {{ $get_name->category_name }}
+                @endif
+            </div>
+        </div> 
     </div>
 </section>
 
