@@ -114,7 +114,7 @@
                                         @endif
 
                                         <td>
-                                            <a class="btn btn-success btn-sm" href="{{ url('    /'.$data->id) }}" role="button" >
+                                            <a class="btn btn-success btn-sm" href="{{ url('admin-order-detail/'.$data->id) }}" role="button" >
                                                 <i class="fas fa-eye"></i> Xem
                                             </a>
                                         </td>

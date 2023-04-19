@@ -1,9 +1,9 @@
 <?php
-
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckLogin;
+use Laravel\Socialite\Facades\Socialite;
 
 //Trang chủ
 Route::get('/', 'HomeController@index')->name('home');

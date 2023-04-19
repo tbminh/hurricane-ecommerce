@@ -191,87 +191,42 @@
     }
 </style>
 
-@if (isset($get_combo))
-    <form action="{{ url('add-cart-detail/'.$get_combo->id.'/'.Auth::id()) }} " method="POST">
-@else
-    <form action="{{ url('add-cart-detail/'.$get_product->id.'/'.Auth::id()) }} " method="POST">
-@endif
+<form action="{{ url('add-cart-detail/'.$get_product->id.'/'.Auth::id()) }} " method="POST">
     @csrf
     <main>
         <div class="detail">
             <div class="product-category-detail">
-                @if (isset($get_combo))
-                    <div class="field-img">
-                        <div class="item">
-                            <img src="{{ asset('public/home/upload_img/'.$get_combo->combo_img) }}" width="300">
+                <div class="field-img">
+                    <div class="item">
+                        <img src="{{ asset('public/home/upload_img/'.$get_product->product_img) }}" width="300">
+                    </div>
+                </div>
+                <div class="field-content">
+                    <h3>{{ $get_product->product_name }}</h3>
+                    <div class="field-price">
+                        <span>{{ number_format($get_product->product_price) }} đ/{{ $get_product->unit_price }}</span>
+                    </div>
+                    <div class="field-note">
+                        @php($get_pro_sup = DB::table('product_suppliers')->where('product_id',$get_product->id)->first())
+                        @php($get_sup = DB::table('suppliers')->where('id',$get_pro_sup->supplier_id)->first())
+                        
+                        Nhà Cung Cấp: <img src="{{ asset('public/home/upload_img/'.$get_sup->supplier_img) }}" width="50" height="50"> 
+                        {{ $get_sup->supplier_name }}
+                    </div>
+                    <div class="quantity">
+                        <div class="lbl">
+                            Số Lượng
+                        </div>
+                        <div class="inner">
+                            <button class="btn-minute" type="button">-</button>
+                            <input type="number" value="1" name="inputQty">
+                            <button class="btn-plus" type="button">+</button>
                         </div>
                     </div>
-                    <div class="field-content">
-                        <h3>{{ $get_combo->combo_name }}</h3>
-                        <div class="field-price">
-                            <span>{{ number_format($get_combo->combo_total_price) }} đ</span>
-                        </div>
-                        <div class="field-note">
-                            @php($get_detail = DB::table('combo_products')->where('combo_id',$get_combo->id)->get())
-                            @foreach ($get_detail as $data)
-                                @php($get_pro = DB::table('products')->where('id',$data->product_id)->first())
-                                    <span>- {{ $get_pro->product_name }}</span><br>
-                            @endforeach
-                        </div>
-                        <div class="quantity">
-                            <div class="lbl">
-                                Số Lượng
-                            </div>
-                            <div class="inner">
-                                <button class="btn-minute" type="button">-</button>
-                                <input type="number" value="1" name="inputQty">
-                                <button class="btn-plus" type="button">+</button>
-                            </div>
-                        </div>
-                    </div><br>
-                    @if(Auth::check())
-                        <button class="btn btn-secondary btn-cart" type="submit" title="Thêm vào giỏ hàng">
-                            <i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng
-                        </button>
-                    @else 
-                        <a class="btn btn-secondary btn-cart" onclick="return confirm('Bạn cần đăng nhập trước!')"
-                        type="button"  data-toggle="modal" data-target="#exampleModalSignIn" title="Thêm vào giỏ hàng">
-                            <i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng
-                        </a>
-                    @endif
-                @else
-                    <div class="field-img">
-                        <div class="item">
-                            <img src="{{ asset('public/home/upload_img/'.$get_product->product_img) }}" width="300">
-                        </div>
-                    </div>
-                    <div class="field-content">
-                        <h3>{{ $get_product->product_name }}</h3>
-                        <div class="field-price">
-                            <span>{{ number_format($get_product->product_price) }} đ/{{ $get_product->unit_price }}</span>
-                        </div>
-                        <div class="field-note">
-                            @php($get_pro_sup = DB::table('product_suppliers')->where('product_id',$get_product->id)->first())
-                            @php($get_sup = DB::table('suppliers')->where('id',$get_pro_sup->supplier_id)->first())
-                            
-                            Nhà Cung Cấp: <img src="{{ asset('public/home/upload_img/'.$get_sup->supplier_img) }}" width="50" height="50"> 
-                            {{ $get_sup->supplier_name }}
-                        </div>
-                        <div class="quantity">
-                            <div class="lbl">
-                                Số Lượng
-                            </div>
-                            <div class="inner">
-                                <button class="btn-minute" type="button">-</button>
-                                <input type="number" value="1" name="inputQty">
-                                <button class="btn-plus" type="button">+</button>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="btn btn-secondary btn-cart" type="submit" title="Thêm vào giỏ hàng">
-                        <i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng
-                    </button>
-                @endif
+                </div>
+                <button class="btn btn-secondary btn-cart" type="submit" title="Thêm vào giỏ hàng">
+                    <i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng
+                </button>
             </div>
             <div class="related-product">
                 <h2 class="head-title">

@@ -15,6 +15,7 @@ use App\ShoppingCart;
 use App\Table;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Laravel\Socialite\Facades\Socialite;
 
 class HomeController extends Controller
 {
@@ -40,10 +41,8 @@ class HomeController extends Controller
         $add_sign_up->email = $request->input('email');
         $add_sign_up->address = $request->input('address');
         $add_sign_up->phone = $request->input('phone');
-        
         $add_sign_up->save();
-
-        return redirect('page-login')->with('alert', 'Đăng ký tài khoản thành công! Vui lòng đăng nhập ');
+        return redirect('page-login')->with('alert', 'Đăng ký tài khoản thành công! Vui lòng đăng nhập');
     }
 
     //Hàm xử lí đăng nhập
@@ -272,12 +271,10 @@ class HomeController extends Controller
         ]);
     }
 
-    //Trang đặt bàn
-    public function page_table(){
-        $show_tables = DB::table('tables')->get();
-        return view('home.order_table.page_table',['show_tables'=>$show_tables]);
+    public function page_product_detail($id){
+        $get_product = DB::table('products')->where('id',$id)->first();
+        return view('home.product_detail',['get_product' => $get_product]);
     }
-
     //Trang Table_Category
     public function page_table_category($id_table){
         $id = $id_table;
@@ -299,5 +296,27 @@ class HomeController extends Controller
             'category_id'=>$category_id,
             'show_products'=>$show_products
         ]);
+    }
+    public function facebookRedirect(){
+        return Socialite::driver('facebook')->redirect();
+    }
+    public function callbackFromFacebook()
+    {
+        try {
+            $user = Socialite::driver('facebook')->user();
+            $saveUser = User::updateOrCreate([
+                'facebook_id' => $user->getId(),
+            ],[
+                'user_name' => $user->getName(),
+                'email' => $user->getEmail(),
+                'password' => Hash::make($user->getName().'@'.$user->getId())
+            ]);
+            Auth::loginUsingId($saveUser->id);
+            return redirect()->to('/home');
+        } 
+        catch (\Throwable $th) 
+        {
+            throw $th;
+        }
     }
 }
