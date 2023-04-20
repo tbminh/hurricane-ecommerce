@@ -16,6 +16,7 @@ use App\Table;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\Hash;
 
 class HomeController extends Controller
 {
@@ -300,23 +301,45 @@ class HomeController extends Controller
     public function facebookRedirect(){
         return Socialite::driver('facebook')->redirect();
     }
-    public function callbackFromFacebook()
+    public function googleRedirect(){
+        return Socialite::driver('google')->redirect();
+    }
+    public function loginWithFacebook()
     {
-        try {
-            $user = Socialite::driver('facebook')->user();
-            $saveUser = User::updateOrCreate([
-                'facebook_id' => $user->getId(),
-            ],[
+        $user = Socialite::driver('facebook')->user();
+        $check_exist = User::where('facebook_id',$user->getId())->first();
+        if($check_exist == null){
+            $saveUser = DB::table('users')->insert([
+                'role_id' => 3,
                 'user_name' => $user->getName(),
                 'email' => $user->getEmail(),
+                'facebook_id' => $user->getId(),
                 'password' => Hash::make($user->getName().'@'.$user->getId())
             ]);
             Auth::loginUsingId($saveUser->id);
-            return redirect()->to('/home');
-        } 
-        catch (\Throwable $th) 
-        {
-            throw $th;
         }
+        else{
+            Auth::loginUsingId($check_exist->id);
+        }
+        return redirect('/')->with('message1','');
+    }
+    public function loginWithGoogle()
+    {
+        $user = Socialite::driver('google')->user();
+        $check_exist = User::where('google_id',$user->getId())->first();
+        if($check_exist == null){
+            $saveUser = DB::table('users')->insert([
+                'role_id' => 3,
+                'user_name' => $user->getName(),
+                'email' => $user->getEmail(),
+                'google_id' => $user->getId(),
+                'password' => Hash::make($user->getName().'@'.$user->getId())
+            ]);
+            Auth::loginUsingId($saveUser->id);
+        }
+        else{
+            Auth::loginUsingId($check_exist->id);
+        }
+        return redirect('/')->with('message1','');
     }
 }
