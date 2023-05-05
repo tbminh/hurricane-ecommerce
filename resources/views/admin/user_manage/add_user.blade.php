@@ -29,7 +29,6 @@
                     <input type="text" name="inputFullName" class="form-control"
                            placeholder="Nhập họ và tên" required>
                 </div>
-
                 <div class="form-group">
                     <label for="">Tên đăng nhập:</label>
                     <input type="text" name="inputUserName" class="form-control"

@@ -51,7 +51,7 @@ class AdminController extends Controller
         }else if(Auth::attempt(['user_name' => $name, 'password' => $password, 'role_id' => 2])){
             return redirect('page-admin');
         }else{
-            return redirect()->back()->with('message','');
+            return redirect()->back()->with('message2','');
         }
     }
 
@@ -78,7 +78,6 @@ class AdminController extends Controller
         $update_profile->phone = $request->input('inputPhone');
         $update_profile->gender = $request->input('inputSex');
         $update_profile->address = $request->input('inputAddress');
-
         if($request->hasFile('inputFileImage')){
             $image = $request->file('inputFileImage');
             $image_name = $image->getClientOriginalName();
@@ -86,7 +85,6 @@ class AdminController extends Controller
             $update_profile->avatar = $image_name;
         }
         $update_profile->save();
-
         return redirect()->back()->with('message','Đã cập nhật thông tin');
     }
 
@@ -134,7 +132,7 @@ class AdminController extends Controller
     //Hàm hiển thị trang quyền truy cập
     public function page_role_access()
     {
-        $show_user_roles = User::paginate(5);
+        $show_user_roles = User::where('full_name','<>','')->paginate(5);
         return view('admin.user_manage.role_access',['show_user_roles'=>$show_user_roles]);
     }
 
@@ -275,6 +273,7 @@ class AdminController extends Controller
 
     public function edit_category(Request $request, $id_category){
         $update_cate = Category::find($id_category);
+        $update_cate->category_name = $request->input('inputName');
         if($request->hasFile('inputFileImage')){
             $image = $request->file('inputFileImage');
             $image_name = $image->getClientOriginalName();

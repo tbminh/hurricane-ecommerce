@@ -180,10 +180,8 @@
 					secondaryNav.removeClass('is-fixed');
 				}
 			});	
-			
 	});
 </script>
-
 <script>
 		$(document).ready(function() {
 		$('#Carousel').carousel({
@@ -212,18 +210,14 @@
 
 <!-- Messenger Chat plugin Code -->
 <div id="fb-root"></div>
-
 <!-- Your Chat plugin code -->
 <div id="fb-customer-chat" class="fb-customerchat">
 </div>
-
 <!-- Messenger Chat plugin Code -->
 <div id="fb-root"></div>
-
 <!-- Your Chat plugin code -->
 <div id="fb-customer-chat" class="fb-customerchat">
 </div>
-
 <!-- Messenger Chat plugin Code -->
 <div id="fb-root"></div>
 
@@ -242,7 +236,6 @@
 		version          : 'v12.0'
 		});
 	};
-
 	(function(d, s, id) {
 		var js, fjs = d.getElementsByTagName(s)[0];
 		if (d.getElementById(id)) return;

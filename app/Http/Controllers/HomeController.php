@@ -316,7 +316,7 @@ class HomeController extends Controller
                 'facebook_id' => $user->getId(),
                 'password' => Hash::make($user->getName().'@'.$user->getId())
             ]);
-            Auth::loginUsingId($saveUser->id);
+            Auth::loginUsingId($user->getId());
         }
         else{
             Auth::loginUsingId($check_exist->id);
@@ -335,7 +335,8 @@ class HomeController extends Controller
                 'google_id' => $user->getId(),
                 'password' => Hash::make($user->getName().'@'.$user->getId())
             ]);
-            Auth::loginUsingId($saveUser->id);
+            // Auth::loginUsingId($saveUser->id);
+            Auth::loginUsingId($user->getId());
         }
         else{
             Auth::loginUsingId($check_exist->id);

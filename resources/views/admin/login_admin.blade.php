@@ -281,8 +281,6 @@
                 parent.classList.remove("focus");
             }
         }
-    
-    
         inputs.forEach(input => {
             input.addEventListener("focus", addcl);
             input.addEventListener("blur", remcl);
@@ -296,9 +294,8 @@
         alert(msg);
     }
 </script>
-
 </body>
-@if(session()->has('message2'))
+    @if(session()->has('message2'))
         <script>
             Swal.fire({
                 position: 'center',
